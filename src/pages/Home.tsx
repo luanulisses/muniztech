@@ -169,16 +169,16 @@ export default function Home() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           {featuredDeals.map((deal, idx) => (
             <div
               key={deal.id}
-              className="bg-white border border-surface-container-high rounded-[32px] p-5 shadow-lg hover:shadow-xl transition-all relative flex flex-col group"
+              className="bg-white border border-surface-container-high rounded-2xl md:rounded-[32px] p-3 md:p-5 shadow-lg hover:shadow-xl transition-all relative flex flex-col group"
             >
-              <div className="absolute top-4 left-4 z-10 px-3 py-1.5 bg-red-600 text-white text-[11px] font-black uppercase rounded-xl shadow-md">
+              <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 px-2 py-1 md:px-3 md:py-1.5 bg-red-600 text-white text-[8px] md:text-[11px] font-black uppercase rounded-lg shadow-md">
                 {deal.discount} OFF
               </div>
-              <div className="h-48 flex items-center justify-center p-4">
+              <div className="h-28 md:h-48 flex items-center justify-center p-2 md:p-4">
                 <img
                   src={deal.image}
                   className="max-h-full object-contain mix-blend-multiply transition-transform group-hover:scale-105"
@@ -187,22 +187,19 @@ export default function Home() {
               </div>
 
               <div className="mt-4 space-y-3 flex-grow flex flex-col">
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex items-center gap-1 text-[9px] md:text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-50 w-fit px-2 py-1 rounded-md">
-                    <Clock className="w-3 h-3" /> Últimas
-                  </div>
-                  <div className="flex items-center gap-1 text-[9px] md:text-[10px] font-black text-orange-600 uppercase tracking-widest bg-orange-50 w-fit px-2 py-1 rounded-md">
-                    <Flame className="w-3 h-3" /> {32 + idx * 5} vendas hoje
+                <div className="flex flex-wrap items-center gap-1 md:gap-2">
+                  <div className="flex items-center gap-1 text-[8px] md:text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-50 w-fit px-1.5 py-0.5 md:px-2 md:py-1 rounded-md">
+                    <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" /> Últimas
                   </div>
                 </div>
-                <h3 className="font-black text-on-surface leading-tight line-clamp-2 text-sm md:text-base">
+                <h3 className="font-black text-on-surface leading-tight line-clamp-2 text-[10px] md:text-base">
                   {deal.title}
                 </h3>
-                <div className="mt-auto space-y-1 pt-2">
-                  <div className="text-[10px] md:text-xs text-on-surface-variant line-through font-label-bold">
+                <div className="mt-auto space-y-0.5 pt-2">
+                  <div className="text-[8px] md:text-xs text-on-surface-variant line-through font-label-bold">
                     {deal.originalPrice}
                   </div>
-                  <div className="text-2xl md:text-3xl font-black text-on-surface leading-none tracking-tighter">
+                  <div className="text-base md:text-3xl font-black text-on-surface leading-none tracking-tighter">
                     {deal.price}
                   </div>
                 </div>
@@ -210,9 +207,9 @@ export default function Home() {
                   href={deal.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full mt-4 py-3 bg-secondary text-white rounded-xl font-black uppercase text-[11px] md:text-xs tracking-widest flex items-center justify-center transition-transform hover:bg-secondary-fixed-variant active:scale-95 shadow-md shadow-secondary/20"
+                  className="w-full mt-2 md:mt-4 py-2 md:py-3 bg-secondary text-white rounded-lg md:rounded-xl font-black uppercase text-[8px] md:text-xs tracking-widest flex items-center justify-center transition-transform hover:bg-secondary-fixed-variant active:scale-95 shadow-md shadow-secondary/20"
                 >
-                  Comprar Agora
+                  Comprar
                 </a>
               </div>
             </div>
