@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDeals } from '@/hooks/useDeals';
-import { Tag, ExternalLink, Filter, TrendingUp, Clock, Loader2, X, ChevronRight, Check } from 'lucide-react';
+import { Tag, ExternalLink, Filter, TrendingUp, Clock, Loader2, X, Check, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Deals() {
@@ -16,46 +16,38 @@ export default function Deals() {
     .sort((a, b) => {
       if (sortBy === 'price-asc') return parseFloat(a.price.replace(/[^\d]/g, '')) - parseFloat(b.price.replace(/[^\d]/g, ''));
       if (sortBy === 'price-desc') return parseFloat(b.price.replace(/[^\d]/g, '')) - parseFloat(a.price.replace(/[^\d]/g, ''));
-      return 0; // Default newest (handled by created_at in hook if possible)
+      return 0;
     });
 
   return (
-    <div className="bg-surface min-h-screen pb-20 relative">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 space-y-12">
+    <div className="bg-surface min-h-screen pb-32">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12 space-y-8 md:space-y-12">
         {/* Header Ofertas */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-surface-container-high">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-500/10 text-red-600 rounded-full font-black text-xs uppercase tracking-widest border border-red-500/20">
-              <TrendingUp className="w-4 h-4 animate-pulse" />
-              <span>Ofertas Monitoradas em Tempo Real</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-surface-container-high">
+          <div className="space-y-4 text-center md:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-500/10 text-red-600 rounded-full font-black text-[10px] md:text-xs uppercase tracking-widest border border-red-500/20 mx-auto md:mx-0">
+              <TrendingUp className="w-3.5 h-3.5 animate-pulse" />
+              <span>Ofertas Monitoradas</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-black text-on-surface tracking-tightest uppercase">
+            <h1 className="text-3xl md:text-6xl font-black text-on-surface tracking-tight uppercase">
               Seleção de{' '}
-              <span className="text-secondary underline decoration-4 underline-offset-8">
-                Descontos
-              </span>
+              <span className="text-secondary">Descontos</span>
             </h1>
-            <p className="text-xl text-on-surface-variant font-label-bold max-w-2xl leading-relaxed">
-              Filtramos a internet para trazer apenas os menores preços reais. Nada de "metade do dobro".
+            <p className="text-sm md:text-xl text-on-surface-variant font-label-bold max-w-2xl leading-relaxed">
+              Filtramos a internet para trazer os menores preços reais.
             </p>
           </div>
 
-          {/* Filtros rápidos & Link Listicle */}
-          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto lg:justify-end mt-4 md:mt-0">
-            <Link
-              to="/artigo/5-gadgets-baratos"
-              className="flex items-center gap-2 px-5 py-3 bg-secondary text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-secondary-fixed-variant transition-transform hover:scale-105 whitespace-nowrap shadow-[0_4px_14px_0_rgb(22,163,74,0.39)]"
-            >
-              ⭐ 5 Gadgets Baratos
-            </Link>
+          {/* Filtros rápidos */}
+          <div className="flex overflow-x-auto no-scrollbar gap-2 w-full md:w-auto pb-2 md:pb-0">
             <button 
               onClick={() => setIsFilterOpen(true)}
-              className="flex items-center gap-2 px-5 py-3 bg-surface-container-highest rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-surface-container-high transition-colors whitespace-nowrap"
+              className="flex items-center gap-2 px-4 py-3 bg-white border border-surface-container-high rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-surface-container-low transition-all shrink-0 shadow-sm"
             >
-              <Filter className="w-4 h-4" /> Filtros {selectedCategory && <span className="ml-1 w-2 h-2 bg-secondary rounded-full" />}
+              <Filter className="w-4 h-4 text-secondary" /> Filtros {selectedCategory && <span className="w-2 h-2 bg-secondary rounded-full" />}
             </button>
-            <button className="flex items-center gap-2 px-5 py-3 border border-surface-container-high rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-surface-container-highest transition-colors whitespace-nowrap text-orange-600">
-              🔥 Mais Vendidos
+            <button className="flex items-center gap-2 px-4 py-3 bg-white border border-surface-container-high rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-surface-container-low transition-all shrink-0 shadow-sm text-orange-600">
+              🔥 Em Alta
             </button>
           </div>
         </div>
@@ -68,24 +60,25 @@ export default function Deals() {
         ) : (
           <>
             {filteredDeals.length === 0 && (
-              <div className="text-center py-20">
-                <div className="text-4xl mb-4">🔍</div>
-                <h3 className="text-2xl font-black text-on-surface">Nenhuma oferta encontrada</h3>
-                <p className="text-on-surface-variant font-label-bold mt-2">Tente ajustar os filtros ou pesquisar outro termo.</p>
-                <button onClick={() => { setSelectedCategory(null); setIsFilterOpen(false); }} className="mt-6 px-6 py-2 bg-secondary text-white rounded-xl font-black uppercase text-xs">Limpar Filtros</button>
+              <div className="text-center py-20 bg-white rounded-[32px] border-2 border-dashed border-surface-container-high">
+                <Tag className="w-12 h-12 text-on-surface-variant/20 mx-auto mb-4" />
+                <h3 className="text-xl font-black text-on-surface">Nenhuma oferta encontrada</h3>
+                <button onClick={() => setSelectedCategory(null)} className="mt-4 px-6 py-2 bg-secondary text-white rounded-xl font-black uppercase text-xs">Limpar Filtros</button>
               </div>
             )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* 2 colunas no mobile, 4 no desktop */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
               {filteredDeals.map((deal) => (
                 <Link
                   key={deal.id}
                   to={`/ofertas/${deal.slug || deal.id}`}
-                  className="group bg-white border border-surface-container-high rounded-[32px] p-5 shadow-lg hover:shadow-2xl transition-all relative flex flex-col hover:-translate-y-1"
+                  className="group bg-white border border-surface-container-high rounded-2xl md:rounded-[32px] p-3 md:p-5 shadow-sm hover:shadow-xl transition-all relative flex flex-col hover:-translate-y-1"
                 >
-                  <div className="absolute top-4 left-4 z-10 px-3 py-1.5 bg-red-600 text-white text-[11px] font-black uppercase rounded-xl shadow-md">
+                  <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 px-2 py-1 md:px-3 md:py-1.5 bg-red-600 text-white text-[8px] md:text-[11px] font-black uppercase rounded-lg shadow-md">
                     {deal.discount} OFF
                   </div>
-                  <div className="h-48 flex items-center justify-center p-4">
+                  <div className="h-32 md:h-48 flex items-center justify-center p-2 md:p-4">
                     <img
                       src={deal.image}
                       className="max-h-full object-contain mix-blend-multiply transition-transform group-hover:scale-105"
@@ -93,31 +86,26 @@ export default function Deals() {
                     />
                   </div>
 
-                  <div className="mt-4 space-y-3 flex-grow flex flex-col">
-                    <div className="flex items-center justify-between">
-                      <div className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">
-                        Vendido por {deal.store}
-                      </div>
-                      <div className="flex items-center gap-1 text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-50 px-2 py-0.5 rounded-md">
-                        <Clock className="w-3 h-3" /> Hoje
-                      </div>
+                  <div className="mt-2 md:mt-4 space-y-2 md:space-y-3 flex-grow flex flex-col">
+                    <div className="text-[8px] md:text-[10px] font-black text-on-surface-variant uppercase tracking-widest line-clamp-1">
+                      {deal.store}
                     </div>
 
-                    <h3 className="font-black text-on-surface leading-tight line-clamp-2">
+                    <h3 className="font-black text-on-surface leading-tight line-clamp-2 text-[11px] md:text-base h-8 md:h-12">
                       {deal.title}
                     </h3>
 
-                    <div className="mt-auto space-y-1 pt-2">
-                      <div className="text-xs text-on-surface-variant line-through font-label-bold">
+                    <div className="mt-auto pt-2">
+                      <div className="text-[9px] md:text-xs text-on-surface-variant line-through font-label-bold opacity-60">
                         {deal.originalPrice}
                       </div>
-                      <div className="text-3xl font-black text-on-surface leading-none tracking-tighter">
+                      <div className="text-lg md:text-3xl font-black text-on-surface leading-none tracking-tighter">
                         {deal.price}
                       </div>
                     </div>
 
-                    <div className="w-full mt-4 py-3 bg-secondary text-white rounded-xl font-black uppercase text-sm tracking-widest flex items-center justify-center gap-2 transition-transform hover:bg-secondary-fixed-variant group-hover:scale-105 active:scale-95 shadow-[0_4px_14px_0_rgb(22,163,74,0.39)]">
-                      Ver na Loja <ExternalLink className="w-4 h-4" />
+                    <div className="w-full mt-2 md:mt-4 py-2 md:py-3 bg-secondary text-white rounded-lg md:rounded-xl font-black uppercase text-[9px] md:text-xs tracking-widest flex items-center justify-center gap-1 md:gap-2 transition-all hover:bg-secondary-fixed-variant shadow-md shadow-secondary/10">
+                      Ver Oferta <ExternalLink className="w-3 h-3 md:w-4 md:h-4" />
                     </div>
                   </div>
                 </Link>
@@ -125,50 +113,35 @@ export default function Deals() {
             </div>
           </>
         )}
-
-        {/* CTA Telegram */}
-        <div className="bg-slate-900 rounded-[40px] p-12 mt-12 text-center border border-slate-700 shadow-2xl relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(6,182,212,0.15),transparent)]" />
-          <Tag className="w-16 h-16 text-secondary mx-auto mb-6 relative z-10" />
-          <h3 className="text-3xl font-black text-white uppercase tracking-tight relative z-10 mb-4">
-            Não encontrou o que procurava?
-          </h3>
-          <p className="text-gray-400 font-label-bold max-w-lg mx-auto relative z-10 mb-8 text-lg">
-            As melhores promoções acabam em minutos. Participe do nosso grupo VIP e receba alertas de bugs de preço antes de todo mundo.
-          </p>
-          <button className="px-10 py-5 bg-[#0088cc] text-white rounded-2xl font-black uppercase tracking-widest hover:bg-[#0077b5] transition-all shadow-[0_4px_14px_0_rgba(0,136,204,0.39)] relative z-10 hover:scale-105 active:scale-95 text-lg">
-            Entrar no Grupo Telegram
-          </button>
-        </div>
       </div>
 
       {/* FILTER OVERLAY */}
       {isFilterOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end">
+        <div className="fixed inset-0 z-[110] flex justify-end">
           <div className="absolute inset-0 bg-on-surface/50 backdrop-blur-sm" onClick={() => setIsFilterOpen(false)} />
-          <div className="relative w-full max-w-sm bg-white h-full shadow-2xl flex flex-col p-8 space-y-8 animate-in slide-in-from-right duration-300">
+          <div className="relative w-full max-w-[85%] md:max-w-sm bg-white h-full shadow-2xl flex flex-col p-6 md:p-8 space-y-6 md:space-y-8 animate-in slide-in-from-right duration-300">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-black text-on-surface uppercase tracking-tight">Filtros</h2>
+              <h2 className="text-xl md:text-2xl font-black text-on-surface uppercase tracking-tight">Filtros</h2>
               <button onClick={() => setIsFilterOpen(false)} className="p-2 hover:bg-surface-container-low rounded-full">
                 <X className="w-6 h-6 text-on-surface-variant" />
               </button>
             </div>
 
             <div className="space-y-6 flex-grow overflow-y-auto pr-2">
-              <div className="space-y-4">
-                <label className="text-xs font-black uppercase tracking-widest text-secondary">Categorias</label>
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-secondary">Categorias</label>
                 <div className="grid grid-cols-1 gap-2">
                   <button 
                     onClick={() => setSelectedCategory(null)}
-                    className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all font-black text-sm uppercase tracking-wide ${!selectedCategory ? 'border-secondary bg-secondary/5 text-secondary' : 'border-surface-container-high text-on-surface-variant'}`}
+                    className={`flex items-center justify-between p-3 md:p-4 rounded-xl border-2 transition-all font-black text-xs uppercase ${!selectedCategory ? 'border-secondary bg-secondary/5 text-secondary' : 'border-surface-container-high text-on-surface-variant'}`}
                   >
-                    Todas as Categorias {!selectedCategory && <Check className="w-4 h-4" />}
+                    Tudo {!selectedCategory && <Check className="w-4 h-4" />}
                   </button>
                   {categories.map(cat => (
                     <button 
                       key={cat}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all font-black text-sm uppercase tracking-wide ${selectedCategory === cat ? 'border-secondary bg-secondary/5 text-secondary' : 'border-surface-container-high text-on-surface-variant'}`}
+                      className={`flex items-center justify-between p-3 md:p-4 rounded-xl border-2 transition-all font-black text-xs uppercase ${selectedCategory === cat ? 'border-secondary bg-secondary/5 text-secondary' : 'border-surface-container-high text-on-surface-variant'}`}
                     >
                       {cat} {selectedCategory === cat && <Check className="w-4 h-4" />}
                     </button>
@@ -176,18 +149,18 @@ export default function Deals() {
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <label className="text-xs font-black uppercase tracking-widest text-secondary">Ordenar por</label>
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-secondary">Ordenar por</label>
                 <div className="grid grid-cols-1 gap-2">
                   {[
-                    { id: 'newest', label: 'Mais Recentes' },
+                    { id: 'newest', label: 'Recentes' },
                     { id: 'price-asc', label: 'Menor Preço' },
                     { id: 'price-desc', label: 'Maior Preço' }
                   ].map(opt => (
                     <button 
                       key={opt.id}
                       onClick={() => setSortBy(opt.id as any)}
-                      className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all font-black text-sm uppercase tracking-wide ${sortBy === opt.id ? 'border-secondary bg-secondary/5 text-secondary' : 'border-surface-container-high text-on-surface-variant'}`}
+                      className={`flex items-center justify-between p-3 md:p-4 rounded-xl border-2 transition-all font-black text-xs uppercase ${sortBy === opt.id ? 'border-secondary bg-secondary/5 text-secondary' : 'border-surface-container-high text-on-surface-variant'}`}
                     >
                       {opt.label} {sortBy === opt.id && <Check className="w-4 h-4" />}
                     </button>
@@ -198,9 +171,9 @@ export default function Deals() {
 
             <button 
               onClick={() => setIsFilterOpen(false)}
-              className="w-full py-5 bg-secondary text-white rounded-2xl font-black uppercase tracking-widest shadow-xl"
+              className="w-full py-4 bg-secondary text-white rounded-xl font-black uppercase tracking-widest shadow-xl text-sm"
             >
-              Aplicar Filtros
+              Aplicar
             </button>
           </div>
         </div>

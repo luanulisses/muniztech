@@ -16,6 +16,7 @@ const OfferLanding = React.lazy(() => import('@/pages/OfferLanding'));
 const About = React.lazy(() => import('@/pages/About'));
 const Contact = React.lazy(() => import('@/pages/Contact'));
 const Listicle = React.lazy(() => import('@/pages/Listicle'));
+const Search = React.lazy(() => import('@/pages/Search'));
 
 // Admin Pages
 const AdminLogin = React.lazy(() => import('@/pages/admin/Login'));
@@ -71,6 +72,7 @@ function AppContent() {
               <Route path="/ofertas/:slug" element={<PageWrapper><OfferLanding /></PageWrapper>} />
               <Route path="/sobre" element={<PageWrapper><About /></PageWrapper>} />
               <Route path="/contato" element={<PageWrapper><Contact /></PageWrapper>} />
+              <Route path="/busca" element={<PageWrapper><Search /></PageWrapper>} />
               <Route path="/artigo/5-gadgets-baratos" element={<PageWrapper><Listicle /></PageWrapper>} />
 
               {/* Admin Login (No Layout) */}
