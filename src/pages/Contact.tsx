@@ -5,7 +5,7 @@ import { Mail, MessageCircle, MapPin, Send, CheckCircle, AlertCircle, Loader2 } 
 // Para ativar: acesse https://formspree.io, crie uma conta gratuita,
 // clique em "New Form", coloque o email contato@muniztech.com.br,
 // e substitua FORMSPREE_FORM_ID pelo ID gerado (ex: "xkgjbzpq").
-const FORMSPREE_FORM_ID = 'xkgjbzpq'; // <-- substitua pelo seu ID
+const FORMSPREE_FORM_ID = 'mgorrlyy';
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
 
