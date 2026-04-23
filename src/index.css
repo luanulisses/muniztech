@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+  /* Fundo Claro / Clean */
+  --color-surface: #f8fafc;
+  --color-surface-dim: #cbd5e1;
+  --color-surface-bright: #ffffff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f1f5f9;
+  --color-surface-container: #e2e8f0;
+  --color-surface-container-high: #cbd5e1;
+  --color-surface-container-highest: #94a3b8;
+
+  --color-on-surface: #0f172a;
+  --color-on-surface-variant: #475569;
+
+  --color-inverse-surface: #0f172a;
+  --color-inverse-on-surface: #f8fafc;
+
+  --color-outline: #94a3b8;
+  --color-outline-variant: #e2e8f0;
+
+  --color-primary: #000000;
+  --color-on-primary: #ffffff;
+
+  /* Verde Conversão (Botões Fortes) */
+  --color-secondary: #16a34a;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #dcfce7;
+  --color-on-secondary-container: #14532d;
+
+  --color-tertiary: #000000;
+  --color-on-tertiary: #ffffff;
+
+  --color-error: #ef4444;
+  --color-on-error: #ffffff;
+  --color-error-container: #fee2e2;
+  --color-on-error-container: #7f1d1d;
+
+  --color-primary-fixed: #e2e8f0;
+  --color-primary-fixed-dim: #cbd5e1;
+  --color-on-primary-fixed: #0f172a;
+  --color-on-primary-fixed-variant: #334155;
+
+  --color-secondary-fixed: #bbf7d0;
+  --color-secondary-fixed-dim: #86efac;
+  --color-on-secondary-fixed: #064e3b;
+  --color-on-secondary-fixed-variant: #065f46;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-on-surface font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-tight;
+  }
+}
+
+.font-display-xl {
+  font-size: 60px;
+  font-weight: 800;
+  line-height: 72px;
+  letter-spacing: -0.02em;
+}
+
+.font-headline-lg {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 44px;
+  letter-spacing: -0.01em;
+}
+
+.font-headline-md {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.font-body-lg {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+.font-body-md {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.font-label-bold {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
