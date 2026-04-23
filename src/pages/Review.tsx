@@ -1,13 +1,14 @@
 import { useParams, Link } from 'react-router-dom';
 import { useReview, useReviews } from '@/hooks/useReviews';
-import { Star, Check, X, ArrowRight, ShoppingCart, Info, Loader2, User, Calendar } from 'lucide-react';
+import { Star, Check, X, ArrowRight, ShoppingCart, Info, Loader2, User, Calendar, MessageSquareText, Search } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Review() {
   const { slug } = useParams();
   const { review, loading: reviewLoading } = useReview(slug || '');
   const { reviews: allReviews, loading: reviewsLoading } = useReviews();
 
-  if (reviewLoading) {
+  if (reviewLoading || (reviewsLoading && !slug)) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center">
         <Loader2 className="w-12 h-12 text-secondary animate-spin" />
@@ -15,12 +16,89 @@ export default function Review() {
     );
   }
 
+  // LIST VIEW (If no slug provided)
+  if (!slug) {
+    return (
+      <div className="bg-surface min-h-screen pb-32 pt-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <header className="mb-12 space-y-4">
+            <div className="flex items-center gap-3">
+              <MessageSquareText className="w-8 h-8 text-secondary" />
+              <h1 className="text-3xl md:text-5xl font-black text-on-surface uppercase tracking-tight">
+                Análises e Guias
+              </h1>
+            </div>
+            <p className="text-on-surface-variant font-label-bold text-lg max-w-2xl">
+              Nossas avaliações detalhadas para você escolher o melhor produto com confiança.
+            </p>
+          </header>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {allReviews.map((item, idx) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <Link
+                  to={`/analises/${item.slug}`}
+                  className="bg-white border border-surface-container-high rounded-[32px] overflow-hidden flex flex-col h-full group hover:shadow-2xl transition-all"
+                >
+                  <div className="aspect-video relative overflow-hidden">
+                    <img 
+                      src={item.image} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      alt={item.title} 
+                    />
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-secondary shadow-sm">
+                      {item.category}
+                    </div>
+                  </div>
+                  <div className="p-6 flex flex-col flex-grow space-y-3">
+                    <div className="flex items-center gap-1 text-yellow-500">
+                      <Star className="w-4 h-4 fill-current" />
+                      <span className="text-xs font-black text-on-surface">{item.rating}/10</span>
+                    </div>
+                    <h3 className="text-xl font-black text-on-surface group-hover:text-secondary transition-colors leading-tight line-clamp-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm font-label-bold text-on-surface-variant line-clamp-3 leading-relaxed">
+                      {item.excerpt}
+                    </p>
+                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-surface-container-high">
+                      <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest flex items-center gap-2">
+                        <Calendar className="w-3.5 h-3.5" /> {item.date}
+                      </span>
+                      <span className="text-xs font-black text-secondary flex items-center gap-1">
+                        Ler agora <ArrowRight className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          {allReviews.length === 0 && (
+            <div className="text-center py-20 bg-white rounded-[40px] border-2 border-dashed border-surface-container-high">
+              <Search className="w-12 h-12 text-on-surface-variant/20 mx-auto mb-4" />
+              <h3 className="text-xl font-black text-on-surface">Nenhuma análise encontrada</h3>
+              <p className="text-on-surface-variant font-label-bold mt-2">Estamos preparando novos conteúdos para você.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // SINGLE REVIEW VIEW
   if (!review) {
     return (
       <div className="min-h-screen bg-surface flex flex-col items-center justify-center space-y-4 px-4 text-center">
         <h2 className="text-2xl font-black text-on-surface">Avaliação não encontrada</h2>
-        <Link to="/" className="text-secondary font-black uppercase tracking-widest text-sm hover:underline">
-          Voltar para o início
+        <Link to="/analises" className="text-secondary font-black uppercase tracking-widest text-sm hover:underline">
+          Ver todas as análises
         </Link>
       </div>
     );
@@ -29,7 +107,7 @@ export default function Review() {
   const otherReviews = allReviews.filter((r) => r.slug !== review.slug).slice(0, 5);
 
   return (
-    <div className="bg-surface min-h-screen pb-20 font-sans overflow-x-hidden">
+    <div className="bg-surface min-h-screen pb-32 font-sans overflow-x-hidden">
       {/* 1. HEADER DO ARTIGO */}
       <header className="max-w-4xl mx-auto px-4 md:px-8 pt-8 md:pt-16 pb-8">
         <div className="space-y-6 text-center">
@@ -60,7 +138,7 @@ export default function Review() {
 
       {/* 2. IMAGEM DE CAPA */}
       <div className="max-w-5xl mx-auto px-4 md:px-8 mb-12 md:mb-20">
-        <div className="relative aspect-video md:aspect-[21/9] rounded-[40px] overflow-hidden shadow-2xl border border-white/20">
+        <div className="relative aspect-video md:aspect-[21/9] rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl border border-white/20">
           <img
             src={review.image}
             className="w-full h-full object-cover"
@@ -74,7 +152,7 @@ export default function Review() {
         {/* 3. CONTEÚDO PRINCIPAL (8 COLUNAS) */}
         <article className="lg:col-span-8 space-y-12">
           {/* Veredito Rápido */}
-          <div className="bg-white rounded-[40px] p-8 md:p-12 shadow-xl border border-surface-container-high relative overflow-hidden group">
+          <div className="bg-white rounded-[32px] md:rounded-[40px] p-8 md:p-12 shadow-xl border border-surface-container-high relative overflow-hidden group">
              <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-secondary/10 transition-colors" />
              
              <h2 className="text-2xl font-black text-on-surface uppercase tracking-tight mb-8 flex items-center gap-3">
@@ -141,7 +219,7 @@ export default function Review() {
           </div>
 
           {/* Conteúdo Rico */}
-          <div className="prose prose-lg max-w-none prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-p:font-label-bold prose-p:text-on-surface-variant prose-img:rounded-[32px]">
+          <div className="prose prose-lg max-w-none prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-p:font-label-bold prose-p:text-on-surface-variant prose-img:rounded-[32px] px-2 md:px-0">
             {review.content ? (
               <div dangerouslySetInnerHTML={{ __html: review.content }} />
             ) : (
@@ -150,7 +228,7 @@ export default function Review() {
           </div>
 
           {/* CTA Final */}
-          <div className="bg-slate-900 rounded-[40px] p-8 md:p-16 text-center space-y-8 relative overflow-hidden">
+          <div className="bg-slate-900 rounded-[32px] md:rounded-[40px] p-8 md:p-16 text-center space-y-8 relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(22,163,74,0.15),transparent)]" />
             <h3 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tight relative z-10">
               Gostou do que viu?

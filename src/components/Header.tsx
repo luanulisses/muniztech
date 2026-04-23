@@ -20,7 +20,7 @@ export default function Header() {
   ];
 
   return (
-    <header className="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-surface-container-high shadow-sm h-16">
+    <header className="bg-white/95 backdrop-blur-md sticky top-0 z-[70] border-b border-surface-container-high shadow-sm h-16 md:h-20">
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-full">
         <div className="flex items-center gap-4">
           <button
@@ -71,14 +71,14 @@ export default function Header() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-on-surface/50 backdrop-blur-sm z-[60] md:hidden"
+              className="fixed inset-0 bg-on-surface/50 backdrop-blur-sm z-[80] md:hidden"
             />
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 w-[80%] max-w-sm bg-white z-[70] md:hidden flex flex-col shadow-2xl"
+              className="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-white z-[90] md:hidden flex flex-col shadow-2xl"
             >
               <div className="p-6 border-b border-surface-container-high flex items-center justify-between">
                 <span className="text-xl font-black text-on-surface tracking-tighter">MunizTech</span>

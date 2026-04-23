@@ -11,7 +11,8 @@ import {
   ShoppingCart,
   Eye,
   Send,
-  Loader2
+  Loader2,
+  Search as SearchIcon
 } from 'lucide-react';
 import { CATEGORIES } from '@/constants';
 import * as Icons from 'lucide-react';
@@ -45,87 +46,89 @@ export default function Home() {
   const mainHeroProduct = reviews[currentIndex] || reviews[0];
 
   return (
-    <div className="flex flex-col gap-12 pb-16 bg-surface">
+    <div className="flex flex-col gap-12 pb-32 bg-surface">
       {/* 1. HERO SECTION (CARROSSEL DE NOVIDADES) */}
-      <section className="bg-white border-b border-surface-container-high pb-12 pt-8 relative overflow-hidden">
+      <section className="bg-white border-b border-surface-container-high pb-12 pt-4 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8 w-full">
           {mainHeroProduct && (
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentIndex}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.02 }}
                 transition={{ duration: 0.4 }}
-                className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+                className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
               >
-                <div className="space-y-6 order-2 lg:order-1">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-500/10 text-red-600 rounded-full font-black text-xs uppercase tracking-widest border border-red-500/20">
-                    <Flame className="w-4 h-4 animate-pulse" />
+                <div className="space-y-4 md:space-y-6 order-2 lg:order-1 text-center lg:text-left">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-500/10 text-red-600 rounded-full font-black text-[10px] md:text-xs uppercase tracking-widest border border-red-500/20 mx-auto lg:mx-0">
+                    <Flame className="w-3.5 h-3.5 animate-pulse" />
                     <span>Oferta em Destaque</span>
                   </div>
 
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-on-surface leading-tight tracking-tightest">
-                    {mainHeroProduct.title.split(':')[0].replace(' vs ', ' x ')}{' '}
-                    <span className="text-secondary block mt-2">Vale a Pena?</span>
+                  <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-on-surface leading-tight tracking-tight">
+                    {mainHeroProduct.title.split(':')[0].replace(' vs ', ' x ')}
+                    <span className="text-secondary block">Vale a Pena?</span>
                   </h1>
 
-                  <p className="text-lg md:text-xl text-on-surface-variant font-label-bold leading-relaxed line-clamp-3">
+                  <p className="text-sm md:text-lg lg:text-xl text-on-surface-variant font-label-bold leading-relaxed line-clamp-2 md:line-clamp-3">
                     {mainHeroProduct.excerpt}
                   </p>
 
-                  <div className="flex items-center gap-2 text-yellow-500 bg-yellow-50 w-fit px-3 py-1.5 rounded-lg border border-yellow-200">
-                    <div className="flex gap-1">
+                  <div className="flex items-center gap-2 text-yellow-500 bg-yellow-50 w-fit px-3 py-1.5 rounded-lg border border-yellow-200 mx-auto lg:mx-0">
+                    <div className="flex gap-0.5">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-current" />
+                        <Star key={i} className="w-3.5 h-3.5 fill-current" />
                       ))}
                     </div>
-                    <span className="text-on-surface-variant font-black text-sm ml-1">
-                      {mainHeroProduct.rating} Nota Editorial
+                    <span className="text-on-surface-variant font-black text-[10px] md:text-xs ml-1">
+                      {mainHeroProduct.rating} Nota MunizTech
                     </span>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <div className="flex flex-col sm:flex-row gap-4 pt-2 md:pt-4">
                     <a
                       href={mainHeroProduct.buyLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full sm:w-auto px-8 py-4 bg-secondary text-white rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-transform hover:scale-105 active:scale-95 shadow-[0_8px_30px_rgb(22,163,74,0.3)] hover:shadow-[0_8px_30px_rgb(22,163,74,0.5)]"
+                      className="w-full sm:w-auto px-8 py-4 bg-secondary text-white rounded-2xl font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-secondary/20"
                     >
                       <ShoppingCart className="w-5 h-5" />
                       Comprar Agora
                     </a>
                     <Link
                       to={`/analises/${mainHeroProduct.slug}`}
-                      className="w-full sm:w-auto px-8 py-4 bg-surface-container-highest text-on-surface rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-surface-container-high transition-colors"
+                      className="w-full sm:w-auto px-8 py-4 bg-surface-container-highest text-on-surface rounded-2xl font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2 hover:bg-surface-container-high transition-colors"
                     >
-                      <Icons.Search className="w-5 h-5" /> Ver Análise Completa
+                      <SearchIcon className="w-5 h-5" /> Ver Análise Completa
                     </Link>
                   </div>
                 </div>
 
                 <div className="order-1 lg:order-2 relative flex justify-center group">
-                  <div className="absolute top-4 right-4 z-10 px-4 py-2 bg-red-600 text-white text-sm font-black uppercase rounded-xl shadow-xl transform rotate-12 animate-pulse">
+                  <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 px-3 py-1.5 md:px-4 md:py-2 bg-red-600 text-white text-[10px] md:text-sm font-black uppercase rounded-xl shadow-xl transform rotate-12 animate-pulse">
                     Em Alta!
                   </div>
-                  <img
-                    src={mainHeroProduct.image}
-                    className="w-full max-w-md h-[400px] object-cover rounded-[40px] shadow-2xl shadow-black/10 transition-transform duration-700 group-hover:scale-105"
-                    alt={mainHeroProduct.title}
-                  />
+                  <div className="w-full max-w-sm md:max-w-md aspect-square md:aspect-auto md:h-[400px] overflow-hidden rounded-[32px] md:rounded-[40px] shadow-2xl shadow-black/10">
+                    <img
+                      src={mainHeroProduct.image}
+                      className="w-full h-full object-contain md:object-cover bg-surface-container-lowest p-4 md:p-0 transition-transform duration-700 group-hover:scale-105"
+                      alt={mainHeroProduct.title}
+                    />
+                  </div>
                 </div>
               </motion.div>
             </AnimatePresence>
           )}
 
           {/* Dots Pagination */}
-          <div className="flex justify-center gap-3 mt-12">
+          <div className="flex justify-center gap-2 md:gap-3 mt-8 md:mt-12">
             {reviews.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
-                className={`transition-all duration-300 rounded-full h-2 ${
-                  idx === currentIndex ? 'w-10 bg-secondary' : 'w-2 bg-surface-container-high hover:bg-surface-container-highest'
+                className={`transition-all duration-300 rounded-full h-1.5 md:h-2 ${
+                  idx === currentIndex ? 'w-8 md:w-10 bg-secondary' : 'w-1.5 md:w-2 bg-surface-container-high hover:bg-surface-container-highest'
                 }`}
                 aria-label={`Ir para o slide ${idx + 1}`}
               />
@@ -136,19 +139,19 @@ export default function Home() {
 
       {/* 2. CATEGORIAS */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 w-full mt-4">
-        <div className="flex overflow-x-auto no-scrollbar gap-4 pb-4 snap-x">
+        <div className="flex overflow-x-auto no-scrollbar gap-3 md:gap-4 pb-4 snap-x">
           {CATEGORIES.map((cat) => {
             const IconComponent = (Icons as any)[cat.icon] || Icons.Tag;
             return (
               <Link
                 key={cat.id}
                 to={`/categoria/${cat.slug}`}
-                className="snap-start shrink-0 min-w-[120px] p-4 bg-white rounded-3xl border border-surface-container-high shadow-sm hover:border-secondary hover:shadow-md transition-all text-center flex flex-col items-center gap-3 group"
+                className="snap-start shrink-0 min-w-[100px] md:min-w-[120px] p-3 md:p-4 bg-white rounded-2xl md:rounded-3xl border border-surface-container-high shadow-sm hover:border-secondary transition-all text-center flex flex-col items-center gap-2 md:gap-3 group"
               >
-                <div className="w-12 h-12 rounded-full bg-surface-container-low text-on-surface-variant flex items-center justify-center group-hover:bg-secondary/10 group-hover:text-secondary transition-colors">
-                  <IconComponent className="w-6 h-6" />
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-surface-container-low text-on-surface-variant flex items-center justify-center group-hover:bg-secondary/10 group-hover:text-secondary transition-colors">
+                  <IconComponent className="w-5 h-5 md:w-6 md:h-6" />
                 </div>
-                <span className="font-black text-sm text-on-surface group-hover:text-secondary transition-colors">
+                <span className="font-black text-[10px] md:text-sm text-on-surface group-hover:text-secondary transition-colors uppercase tracking-tight">
                   {cat.name}
                 </span>
               </Link>
@@ -160,8 +163,8 @@ export default function Home() {
       {/* 3. OFERTAS RELÂMPAGO */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 w-full space-y-6">
         <div className="flex items-center gap-3">
-          <Flame className="w-8 h-8 text-red-500" />
-          <h2 className="text-3xl font-black text-on-surface uppercase tracking-tight">
+          <Flame className="w-6 h-6 md:w-8 md:h-8 text-red-500" />
+          <h2 className="text-2xl md:text-3xl font-black text-on-surface uppercase tracking-tight">
             Ofertas Relâmpago
           </h2>
         </div>
@@ -185,21 +188,21 @@ export default function Home() {
 
               <div className="mt-4 space-y-3 flex-grow flex flex-col">
                 <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex items-center gap-1 text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-50 w-fit px-2 py-1 rounded-md">
+                  <div className="flex items-center gap-1 text-[9px] md:text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-50 w-fit px-2 py-1 rounded-md">
                     <Clock className="w-3 h-3" /> Últimas
                   </div>
-                  <div className="flex items-center gap-1 text-[10px] font-black text-orange-600 uppercase tracking-widest bg-orange-50 w-fit px-2 py-1 rounded-md">
-                    <Flame className="w-3 h-3" /> {32 + idx * 5} compras em 24h
+                  <div className="flex items-center gap-1 text-[9px] md:text-[10px] font-black text-orange-600 uppercase tracking-widest bg-orange-50 w-fit px-2 py-1 rounded-md">
+                    <Flame className="w-3 h-3" /> {32 + idx * 5} vendas hoje
                   </div>
                 </div>
-                <h3 className="font-black text-on-surface leading-tight line-clamp-2">
+                <h3 className="font-black text-on-surface leading-tight line-clamp-2 text-sm md:text-base">
                   {deal.title}
                 </h3>
                 <div className="mt-auto space-y-1 pt-2">
-                  <div className="text-xs text-on-surface-variant line-through font-label-bold">
+                  <div className="text-[10px] md:text-xs text-on-surface-variant line-through font-label-bold">
                     {deal.originalPrice}
                   </div>
-                  <div className="text-3xl font-black text-on-surface leading-none tracking-tighter">
+                  <div className="text-2xl md:text-3xl font-black text-on-surface leading-none tracking-tighter">
                     {deal.price}
                   </div>
                 </div>
@@ -207,7 +210,7 @@ export default function Home() {
                   href={deal.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full mt-4 py-3 bg-secondary text-white rounded-xl font-black uppercase text-sm tracking-widest flex items-center justify-center transition-transform hover:bg-secondary-fixed-variant active:scale-95 shadow-md shadow-secondary/20"
+                  className="w-full mt-4 py-3 bg-secondary text-white rounded-xl font-black uppercase text-[11px] md:text-xs tracking-widest flex items-center justify-center transition-transform hover:bg-secondary-fixed-variant active:scale-95 shadow-md shadow-secondary/20"
                 >
                   Comprar Agora
                 </a>
@@ -219,37 +222,37 @@ export default function Home() {
 
       {/* 4. ACHADINHOS */}
       {achadinhos.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 md:px-8 w-full space-y-6 mt-8">
+        <section className="max-w-7xl mx-auto px-4 md:px-8 w-full space-y-6 mt-4">
           <div className="flex items-center gap-3">
-            <Tag className="w-8 h-8 text-secondary" />
-            <h2 className="text-3xl font-black text-on-surface uppercase tracking-tight">
-              Achadinhos Imperdíveis
+            <Tag className="w-6 h-6 md:w-8 md:h-8 text-secondary" />
+            <h2 className="text-2xl md:text-3xl font-black text-on-surface uppercase tracking-tight">
+              Achadinhos
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {achadinhos.map((deal) => (
               <a
                 key={deal.id}
                 href={deal.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white border border-surface-container-high rounded-3xl p-4 flex gap-4 items-center group hover:shadow-xl transition-all"
+                className="bg-white border border-surface-container-high rounded-2xl md:rounded-3xl p-3 md:p-4 flex gap-4 items-center group hover:shadow-xl transition-all"
               >
-                <div className="w-24 h-24 shrink-0 bg-surface-container-lowest rounded-2xl flex items-center justify-center p-2">
+                <div className="w-16 h-16 md:w-24 md:h-24 shrink-0 bg-surface-container-lowest rounded-xl md:rounded-2xl flex items-center justify-center p-2">
                   <img
                     src={deal.image}
                     className="max-h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform"
                     alt={deal.title}
                   />
                 </div>
-                <div className="space-y-2">
-                  <h3 className="font-black text-sm text-on-surface line-clamp-2 leading-tight group-hover:text-secondary transition-colors">
+                <div className="space-y-1">
+                  <h3 className="font-black text-xs md:text-sm text-on-surface line-clamp-2 leading-tight group-hover:text-secondary transition-colors">
                     {deal.title}
                   </h3>
                   <div className="flex items-center gap-2">
-                    <span className="text-xl font-black text-secondary">{deal.price}</span>
-                    <span className="text-xs text-on-surface-variant line-through">
+                    <span className="text-base md:text-xl font-black text-secondary">{deal.price}</span>
+                    <span className="text-[10px] text-on-surface-variant line-through">
                       {deal.originalPrice}
                     </span>
                   </div>
@@ -261,38 +264,38 @@ export default function Home() {
       )}
 
       {/* 5. ANÁLISES DETALHADAS */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 w-full grid grid-cols-1 lg:grid-cols-3 gap-12 mt-8">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 w-full grid grid-cols-1 lg:grid-cols-3 gap-12 mt-4 md:mt-8">
         <div className="lg:col-span-2 space-y-8">
           <h2 className="text-2xl font-black text-on-surface uppercase tracking-tight border-l-4 border-secondary pl-4">
             Análises e Guias
           </h2>
 
-          <div className="space-y-6">
-            {reviews.map((review) => (
+          <div className="space-y-4 md:space-y-6">
+            {reviews.slice(0, 5).map((review) => (
               <Link
                 key={review.id}
                 to={`/analises/${review.slug}`}
-                className="flex flex-col sm:flex-row gap-6 bg-white rounded-3xl border border-surface-container-high overflow-hidden transition-all hover:shadow-lg group p-4"
+                className="flex flex-col sm:flex-row gap-4 md:gap-6 bg-white rounded-3xl border border-surface-container-high overflow-hidden transition-all hover:shadow-lg group p-3 md:p-4"
               >
-                <div className="w-full sm:w-48 h-48 sm:h-32 shrink-0 rounded-2xl overflow-hidden relative">
+                <div className="w-full sm:w-48 h-40 md:h-32 shrink-0 rounded-2xl overflow-hidden relative">
                   <img
                     src={review.image}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     alt={review.title}
                   />
                 </div>
-                <div className="flex flex-col justify-center gap-2 w-full">
-                  <h3 className="text-xl font-black text-on-surface group-hover:text-secondary transition-colors leading-tight line-clamp-2">
+                <div className="flex flex-col justify-center gap-1 md:gap-2 w-full">
+                  <h3 className="text-lg md:text-xl font-black text-on-surface group-hover:text-secondary transition-colors leading-tight line-clamp-2">
                     {review.title}
                   </h3>
-                  <p className="text-sm font-label-bold text-on-surface-variant line-clamp-2">
+                  <p className="text-xs md:text-sm font-label-bold text-on-surface-variant line-clamp-2">
                     {review.excerpt}
                   </p>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-secondary">
+                  <div className="flex items-center justify-between mt-1 md:mt-2">
+                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-secondary">
                       {review.category}
                     </span>
-                    <span className="text-xs font-black text-on-surface flex items-center gap-1">
+                    <span className="text-[10px] md:text-xs font-black text-on-surface flex items-center gap-1 uppercase tracking-wider">
                       Ler artigo <Icons.ChevronRight className="w-3 h-3" />
                     </span>
                   </div>
@@ -300,20 +303,24 @@ export default function Home() {
               </Link>
             ))}
           </div>
+          
+          <Link to="/analises" className="flex items-center justify-center w-full py-4 bg-white border-2 border-surface-container-high rounded-2xl text-on-surface font-black uppercase tracking-widest text-xs hover:bg-surface-container-low transition-colors gap-2">
+            Ver todas as análises <Icons.ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
 
         {/* Direita: Em Alta */}
         <aside className="space-y-8">
-          <div className="bg-white rounded-4xl p-8 space-y-6 border border-surface-container-high shadow-lg">
-            <h2 className="text-xl font-black text-on-surface uppercase tracking-tight flex items-center gap-2">
+          <div className="bg-white rounded-3xl md:rounded-4xl p-6 md:p-8 space-y-6 border border-surface-container-high shadow-lg">
+            <h2 className="text-lg md:text-xl font-black text-on-surface uppercase tracking-tight flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-secondary" /> Mais Vendidos
             </h2>
 
             <div className="space-y-6">
               {featuredDeals.slice(0, 3).map((item, index) => (
                 <div key={item.id} className="flex gap-4 group">
-                  <div className="w-16 h-16 shrink-0 bg-surface-container-low rounded-xl flex items-center justify-center p-2 relative">
-                    <div className="absolute -top-2 -left-2 w-6 h-6 bg-secondary text-white rounded-full flex items-center justify-center font-black text-xs shadow-md">
+                  <div className="w-14 h-14 md:w-16 md:h-16 shrink-0 bg-surface-container-low rounded-xl flex items-center justify-center p-2 relative">
+                    <div className="absolute -top-2 -left-2 w-5 h-5 md:w-6 md:h-6 bg-secondary text-white rounded-full flex items-center justify-center font-black text-[10px] md:text-xs shadow-md">
                       {index + 1}
                     </div>
                     <img
@@ -323,11 +330,11 @@ export default function Home() {
                     />
                   </div>
                   <div className="space-y-1 flex-grow">
-                    <h4 className="text-sm font-black text-on-surface line-clamp-2 leading-snug">
+                    <h4 className="text-xs md:text-sm font-black text-on-surface line-clamp-2 leading-snug">
                       {item.title}
                     </h4>
-                    <div className="flex items-center gap-1 text-[10px] font-black text-on-surface-variant uppercase tracking-widest">
-                      <Icons.Eye className="w-3 h-3" /> {item.views || 1000}+ viram hoje
+                    <div className="flex items-center gap-1 text-[9px] md:text-[10px] font-black text-on-surface-variant uppercase tracking-widest">
+                      <Icons.Eye className="w-3 h-3" /> {1200 + index * 300}+ viram hoje
                     </div>
                   </div>
                 </div>
@@ -336,20 +343,20 @@ export default function Home() {
           </div>
 
           {/* Telegram */}
-          <div className="bg-slate-900 rounded-4xl p-8 text-center space-y-6 shadow-xl relative overflow-hidden">
+          <div className="bg-slate-900 rounded-3xl md:rounded-4xl p-6 md:p-8 text-center space-y-6 shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(37,211,102,0.15),transparent)]" />
-            <div className="w-16 h-16 bg-[#0088cc] text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg relative z-10">
-              <Send className="w-8 h-8 ml-1" />
+            <div className="w-14 h-14 md:w-16 md:h-16 bg-[#0088cc] text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg relative z-10">
+              <Send className="w-6 h-6 md:w-8 md:h-8 ml-1" />
             </div>
             <div className="space-y-2 relative z-10">
-              <h3 className="text-xl font-black text-white uppercase tracking-tight">
-                Receba alertas no VIP
+              <h3 className="text-lg md:text-xl font-black text-white uppercase tracking-tight">
+                Alertas no VIP
               </h3>
-              <p className="text-sm text-gray-400 font-label-bold">
-                Entre no canal e seja o primeiro a saber.
+              <p className="text-[10px] md:text-sm text-gray-400 font-label-bold">
+                Entre no canal e não perca nada.
               </p>
             </div>
-            <button className="w-full py-4 bg-[#0088cc] text-white rounded-xl font-black uppercase tracking-widest text-sm hover:bg-[#0077b5] transition-colors relative z-10">
+            <button className="w-full py-3 md:py-4 bg-[#0088cc] text-white rounded-xl font-black uppercase tracking-widest text-[11px] md:text-sm hover:bg-[#0077b5] transition-colors relative z-10">
               Entrar no Canal
             </button>
           </div>
