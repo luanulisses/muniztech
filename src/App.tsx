@@ -17,6 +17,10 @@ const About = React.lazy(() => import('@/pages/About'));
 const Contact = React.lazy(() => import('@/pages/Contact'));
 const Listicle = React.lazy(() => import('@/pages/Listicle'));
 const Search = React.lazy(() => import('@/pages/Search'));
+const TrabalheConosco = React.lazy(() => import('@/pages/TrabalheConosco'));
+const PoliticaEditorial = React.lazy(() => import('@/pages/PoliticaEditorial'));
+const TermosDeUso = React.lazy(() => import('@/pages/TermosDeUso'));
+const Privacidade = React.lazy(() => import('@/pages/Privacidade'));
 
 // Admin Pages
 const AdminLogin = React.lazy(() => import('@/pages/admin/Login'));
@@ -73,6 +77,10 @@ function AppContent() {
               <Route path="/sobre" element={<PageWrapper><About /></PageWrapper>} />
               <Route path="/contato" element={<PageWrapper><Contact /></PageWrapper>} />
               <Route path="/busca" element={<PageWrapper><Search /></PageWrapper>} />
+              <Route path="/trabalhe-conosco" element={<PageWrapper><TrabalheConosco /></PageWrapper>} />
+              <Route path="/politica-editorial" element={<PageWrapper><PoliticaEditorial /></PageWrapper>} />
+              <Route path="/termos-de-uso" element={<PageWrapper><TermosDeUso /></PageWrapper>} />
+              <Route path="/privacidade" element={<PageWrapper><Privacidade /></PageWrapper>} />
               <Route path="/artigo/5-gadgets-baratos" element={<PageWrapper><Listicle /></PageWrapper>} />
 
               {/* Admin Login (No Layout) */}
