@@ -38,12 +38,14 @@ function ComparisonSpecs({ specs }: { specs: Review['comparisonSpecs'] }) {
 
   return (
     <div className="bg-white rounded-[24px] md:rounded-[40px] overflow-hidden border border-surface-container-high shadow-xl">
-      <div className="bg-surface-container-low p-6 md:p-8 border-b border-surface-container-high">
-        <h3 className="text-lg md:text-2xl font-black text-on-surface uppercase tracking-tight flex items-center gap-3">
-          <Info className="w-5 h-5 md:w-6 md:h-6 text-secondary" /> Tabela de Diferenças
+      <div className="bg-surface-container-low p-5 md:p-8 border-b border-surface-container-high flex items-center justify-between">
+        <h3 className="text-base md:text-2xl font-black text-on-surface uppercase tracking-tight flex items-center gap-3">
+          <Trophy className="w-5 h-5 md:w-6 md:h-6 text-secondary" /> Duelo Técnico
         </h3>
       </div>
-      <div className="overflow-x-auto">
+      
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-surface-container-lowest text-[10px] md:text-xs font-black uppercase tracking-widest text-on-surface-variant">
@@ -68,6 +70,25 @@ function ComparisonSpecs({ specs }: { specs: Review['comparisonSpecs'] }) {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Stacked View */}
+      <div className="md:hidden divide-y divide-surface-container-high">
+        {specs.map((spec, i) => (
+          <div key={i} className="p-5 space-y-3">
+            <div className="text-[10px] font-black uppercase tracking-widest text-secondary">{spec.label}</div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <div className="text-[8px] font-black uppercase text-on-surface-variant opacity-50">Produto 1</div>
+                <div className="text-xs font-label-bold text-on-surface">{spec.p1}</div>
+              </div>
+              <div className="space-y-1 border-l border-surface-container-high pl-4">
+                <div className="text-[8px] font-black uppercase text-on-surface-variant opacity-50">Produto 2</div>
+                <div className="text-xs font-label-bold text-on-surface">{spec.p2}</div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -222,36 +243,36 @@ function ReviewDetail({ slug }: { slug: string }) {
       {/* Hero VS (Se for Comparativo) */}
       {review.type === 'comparativo' ? (
         <div className="max-w-6xl mx-auto px-4 md:px-8 mb-12 md:mb-20">
-          <div className="grid grid-cols-1 md:grid-cols-11 gap-4 md:gap-0 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-11 gap-2 md:gap-0 items-center">
             {/* Produto 1 */}
-            <div className="md:col-span-5 bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 border border-surface-container-high shadow-xl relative group">
-              <div className="absolute -top-4 -left-4 bg-secondary text-white w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-lg group-hover:scale-110 transition-transform">
+            <div className="md:col-span-5 bg-white rounded-[2.5rem] md:rounded-[3rem] p-4 md:p-10 border border-surface-container-high shadow-xl relative group order-1 md:order-none">
+              <div className="absolute -top-3 -left-3 md:-top-4 md:-left-4 bg-secondary text-white w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-black text-base md:text-xl shadow-lg group-hover:scale-110 transition-transform">
                 {review.rating}
               </div>
-              <div className="aspect-square flex items-center justify-center mb-6">
-                <img src={review.image} className="max-h-full object-contain" alt={review.title} />
+              <div className="aspect-square flex items-center justify-center mb-4 md:mb-6">
+                <img src={review.image} className="max-h-[140px] md:max-h-full object-contain" alt={review.title} />
               </div>
-              <h3 className="text-xl md:text-2xl font-black text-center text-on-surface uppercase tracking-tighter">
+              <h3 className="text-lg md:text-2xl font-black text-center text-on-surface uppercase tracking-tighter line-clamp-1">
                 {review.product1Name || review.title.split(' vs ')[0] || 'Produto 1'}
               </h3>
             </div>
 
             {/* VS Circle */}
-            <div className="md:col-span-1 flex justify-center relative z-10 -my-8 md:my-0">
-               <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-2xl md:text-3xl shadow-2xl border-4 border-surface italic tracking-widest">
+            <div className="md:col-span-1 flex justify-center relative z-10 -my-6 md:my-0 order-2 md:order-none">
+               <div className="w-12 h-12 md:w-20 md:h-20 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-lg md:text-3xl shadow-2xl border-4 border-surface italic tracking-widest">
                  VS
                </div>
             </div>
 
             {/* Produto 2 */}
-            <div className="md:col-span-5 bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 border border-surface-container-high shadow-xl relative group">
-              <div className="absolute -top-4 -right-4 bg-secondary text-white w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-lg group-hover:scale-110 transition-transform">
+            <div className="md:col-span-5 bg-white rounded-[2.5rem] md:rounded-[3rem] p-4 md:p-10 border border-surface-container-high shadow-xl relative group order-3 md:order-none">
+              <div className="absolute -top-3 -right-3 md:-top-4 md:-right-4 bg-secondary text-white w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-black text-base md:text-xl shadow-lg group-hover:scale-110 transition-transform">
                 {review.product2Rating}
               </div>
-              <div className="aspect-square flex items-center justify-center mb-6">
-                <img src={review.product2Image} className="max-h-full object-contain" alt={review.product2Name} />
+              <div className="aspect-square flex items-center justify-center mb-4 md:mb-6">
+                <img src={review.product2Image} className="max-h-[140px] md:max-h-full object-contain" alt={review.product2Name} />
               </div>
-              <h3 className="text-xl md:text-2xl font-black text-center text-on-surface uppercase tracking-tighter">
+              <h3 className="text-lg md:text-2xl font-black text-center text-on-surface uppercase tracking-tighter line-clamp-1">
                 {review.product2Name || review.title.split(' vs ')[1] || 'Produto 2'}
               </h3>
             </div>
