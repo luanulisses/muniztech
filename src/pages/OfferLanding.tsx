@@ -6,11 +6,76 @@ import {
   Truck,
   Star,
   Check,
-  Target,
   ShoppingCart,
   Loader2,
+  BadgeCheck,
+  Handshake,
+  ExternalLink,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+
+// ── Mapa de lojas parceiras ───────────────────────────────────────────────────
+const STORE_CONFIG: Record<string, { color: string; bg: string; border: string; emoji: string; description: string }> = {
+  'Amazon': {
+    color: 'text-[#FF9900]',
+    bg: 'bg-[#FF9900]/10',
+    border: 'border-[#FF9900]/30',
+    emoji: '🛒',
+    description: 'O maior marketplace do mundo. Compra 100% garantida.',
+  },
+  'Mercado Livre': {
+    color: 'text-[#FFE600]',
+    bg: 'bg-yellow-50',
+    border: 'border-yellow-200',
+    emoji: '🛍️',
+    description: 'Plataforma líder na América Latina. Pagamento seguro.',
+  },
+  'Shopee': {
+    color: 'text-[#EE4D2D]',
+    bg: 'bg-orange-50',
+    border: 'border-orange-200',
+    emoji: '🧧',
+    description: 'Preços baixos com entrega rápida e rastreada.',
+  },
+  'Magazine Luiza': {
+    color: 'text-[#0080C9]',
+    bg: 'bg-blue-50',
+    border: 'border-blue-200',
+    emoji: '🏪',
+    description: 'Uma das maiores redes varejistas do Brasil.',
+  },
+  'Americanas': {
+    color: 'text-[#E60014]',
+    bg: 'bg-red-50',
+    border: 'border-red-100',
+    emoji: '🏬',
+    description: 'Gigante do varejo brasileiro com entrega garantida.',
+  },
+  'KaBuM!': {
+    color: 'text-[#FF6A00]',
+    bg: 'bg-orange-50',
+    border: 'border-orange-200',
+    emoji: '💻',
+    description: 'Especialista em tech e games com preços competitivos.',
+  },
+  'AliExpress': {
+    color: 'text-[#FF4747]',
+    bg: 'bg-red-50',
+    border: 'border-red-100',
+    emoji: '🌐',
+    description: 'Importados direto com proteção ao comprador.',
+  },
+};
+
+function getStoreConfig(store: string) {
+  return STORE_CONFIG[store] ?? {
+    color: 'text-secondary',
+    bg: 'bg-secondary/10',
+    border: 'border-secondary/20',
+    emoji: '🏷️',
+    description: 'Parceiro verificado pela equipe MunizTech.',
+  };
+}
 
 export default function OfferLanding() {
   const { slug } = useParams();
@@ -83,9 +148,52 @@ export default function OfferLanding() {
 
           <div className="space-y-8">
             <div className="space-y-4 border-b border-surface-container-high pb-6">
-              <div className="inline-block px-3 py-1 bg-surface-container-highest text-on-surface-variant font-black text-xs uppercase tracking-widest rounded-lg">
-                Vendido por {deal.store}
+
+              {/* Bloco de Parceria Oficial */}
+              {(() => {
+                const cfg = getStoreConfig(deal.store);
+                return (
+                  <div className={`flex items-center gap-3 p-3 rounded-2xl border ${cfg.bg} ${cfg.border}`}>
+                    <span className="text-2xl">{cfg.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`font-black text-sm uppercase tracking-wider ${cfg.color}`}>
+                          Parceria com a {deal.store}
+                        </span>
+                        <BadgeCheck className={`w-4 h-4 shrink-0 ${cfg.color}`} />
+                      </div>
+                      <p className="text-xs text-on-surface-variant font-label-bold mt-0.5 leading-snug">
+                        {cfg.description}
+                      </p>
+                    </div>
+                    <a
+                      href={deal.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`shrink-0 flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-lg border ${cfg.bg} ${cfg.border} ${cfg.color} hover:opacity-80 transition-opacity`}
+                    >
+                      <ExternalLink className="w-3 h-3" /> Verificar
+                    </a>
+                  </div>
+                );
+              })()}
+
+              {/* Selos de confiança */}
+              <div className="flex flex-wrap gap-2">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 border border-green-200 rounded-xl">
+                  <BadgeCheck className="w-3.5 h-3.5 text-green-600 shrink-0" />
+                  <span className="text-[11px] font-black text-green-700 uppercase tracking-wider">Parceiro Verificado</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-xl">
+                  <Handshake className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span className="text-[11px] font-black text-blue-700 uppercase tracking-wider">Link Afiliado Direto</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-xl">
+                  <ShieldCheck className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                  <span className="text-[11px] font-black text-purple-700 uppercase tracking-wider">Compra Garantida</span>
+                </div>
               </div>
+
               <h1 className="text-3xl md:text-5xl font-black text-on-surface leading-tight tracking-tight">
                 {deal.title}
               </h1>
