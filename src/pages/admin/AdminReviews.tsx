@@ -238,8 +238,8 @@ export default function AdminReviews() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-on-surface/50 backdrop-blur-sm overflow-y-auto pt-10 pb-10">
-          <div className="bg-white w-full max-w-7xl rounded-[2.5rem] shadow-2xl p-6 md:p-10 space-y-8 my-auto relative">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-2 md:p-4 bg-on-surface/50 backdrop-blur-sm overflow-y-auto pt-4 md:pt-10 pb-4 md:pb-10">
+          <div className="bg-white w-full max-w-7xl rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl p-4 md:p-10 space-y-6 md:space-y-8 my-auto relative">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black text-on-surface uppercase tracking-tight">
                 {editingReview ? 'Editar Avaliação' : 'Nova Avaliação'}
@@ -251,7 +251,7 @@ export default function AdminReviews() {
 
             <form onSubmit={handleSubmit} className="space-y-12">
               {/* ── SEÇÃO 0: CONFIGURAÇÕES GERAIS ── */}
-              <div className="bg-surface-container-low p-8 rounded-[2rem] border border-surface-container-high shadow-sm space-y-8">
+              <div className="bg-surface-container-low p-4 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border border-surface-container-high shadow-sm space-y-6 md:space-y-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center">
@@ -343,7 +343,7 @@ export default function AdminReviews() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                 {/* ── SEÇÃO 1: PRODUTO 1 ── */}
-                <div className={`p-8 rounded-[2.5rem] border-2 transition-all space-y-8 ${formData.type === 'comparativo' ? 'border-secondary/30 bg-secondary/[0.02]' : 'border-surface-container-high bg-white'}`}>
+                <div className={`p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border-2 transition-all space-y-6 md:space-y-8 ${formData.type === 'comparativo' ? 'border-secondary/30 bg-secondary/[0.02]' : 'border-surface-container-high bg-white'}`}>
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-secondary text-white rounded-full flex items-center justify-center font-black text-lg shadow-lg">1</div>
                     <div>
@@ -456,7 +456,7 @@ export default function AdminReviews() {
                 {/* ── SEÇÃO 2: PRODUTO 2 ── */}
                 <div className="space-y-12">
                 {formData.type === 'comparativo' ? (
-                  <div className="p-8 rounded-[2.5rem] border-2 border-blue-200 bg-blue-50/[0.15] space-y-8 h-full">
+                  <div className="p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-blue-200 bg-blue-50/[0.15] space-y-6 md:space-y-8 h-full">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-black text-lg shadow-lg">2</div>
                       <div>
@@ -582,7 +582,7 @@ export default function AdminReviews() {
 
               {/* ── SEÇÃO 3: TABELA DE SPECS ── */}
               {formData.type === 'comparativo' && (
-                <div className="bg-white p-8 rounded-[2.5rem] border-2 border-surface-container-high space-y-6">
+                <div className="bg-white p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-surface-container-high space-y-6">
                    <div className="flex items-center gap-3">
                       <Trophy className="w-6 h-6 text-secondary" />
                       <h3 className="font-black uppercase tracking-tight text-xl">Tabela Comparativa</h3>
@@ -621,7 +621,7 @@ export default function AdminReviews() {
               )}
 
               {/* ── SEÇÃO 4: VEREDITO & PÚBLICO ── */}
-              <div className="bg-white p-8 rounded-[2.5rem] border-2 border-surface-container-high space-y-8">
+              <div className="bg-white p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-surface-container-high space-y-6 md:space-y-8">
                 <div className="flex items-center gap-3">
                   <Star className="w-6 h-6 text-secondary" />
                   <h3 className="font-black uppercase tracking-tight text-xl">Veredito & Público-Alvo</h3>
@@ -673,7 +673,7 @@ export default function AdminReviews() {
               </div>
 
               {/* ── SEÇÃO 5: CONTEÚDO RICO ── */}
-              <div className="space-y-4 bg-white p-8 rounded-[2.5rem] border-2 border-surface-container-high">
+              <div className="space-y-4 bg-white p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-surface-container-high">
                 <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Análise Detalhada / Veredito Final (Editor Rico)</label>
                 <div className="bg-white border-2 border-surface-container-low rounded-[2rem] overflow-hidden min-h-[400px]">
                   <ReactQuill 

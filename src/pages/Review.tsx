@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useReview, useReviews } from '@/hooks/useReviews';
 import { Star, Check, X, ArrowRight, ShoppingCart, Info, Loader2, User, Calendar, MessageSquareText, Search, BadgeCheck, Handshake, ExternalLink, Swords, Trophy, Minus } from 'lucide-react';
@@ -98,6 +99,12 @@ function ComparisonSpecs({ specs }: { specs: Review['comparisonSpecs'] }) {
 // ... (ReviewList remains same, I'll replace the whole file to be safe)
 function ReviewList() {
   const { reviews, loading } = useReviews();
+  const [activeCategory, setActiveCategory] = useState('Todas');
+
+  const categories = ['Todas', ...new Set(reviews.map(r => r.category))];
+  const filteredReviews = activeCategory === 'Todas' 
+    ? reviews 
+    : reviews.filter(r => r.category === activeCategory);
 
   if (loading) {
     return (
@@ -110,20 +117,38 @@ function ReviewList() {
   return (
     <div className="bg-surface min-h-screen pb-32 pt-8">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <header className="mb-8 md:mb-12 space-y-2 md:space-y-4">
-          <div className="flex items-center gap-3">
-            <MessageSquareText className="w-7 h-7 md:w-8 md:h-8 text-secondary" />
-            <h1 className="text-2xl md:text-5xl font-black text-on-surface uppercase tracking-tight">
-              Análises e Guias
-            </h1>
+        <header className="mb-8 md:mb-16 space-y-6 md:space-y-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 justify-center md:justify-start">
+              <MessageSquareText className="w-7 h-7 md:w-10 md:h-10 text-secondary" />
+              <h1 className="text-3xl md:text-6xl font-black text-on-surface uppercase tracking-tight">
+                Análises
+              </h1>
+            </div>
+            <p className="text-sm md:text-xl text-on-surface-variant font-label-bold max-w-2xl text-center md:text-left">
+              Avaliações detalhadas e comparativos para você escolher o melhor produto com confiança.
+            </p>
           </div>
-          <p className="text-sm md:text-lg text-on-surface-variant font-label-bold max-w-2xl">
-            Avaliações detalhadas para você escolher o melhor produto.
-          </p>
+
+          {/* Filtro de Categorias */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-6 py-3 rounded-2xl font-black uppercase tracking-widest text-[10px] whitespace-nowrap transition-all border-2
+                  ${activeCategory === cat 
+                    ? 'bg-secondary border-secondary text-white shadow-lg shadow-secondary/20 scale-105' 
+                    : 'bg-white border-surface-container-high text-on-surface-variant hover:border-secondary/30'}`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </header>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-          {reviews.map((item, idx) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+          {filteredReviews.map((item, idx) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 20 }}
