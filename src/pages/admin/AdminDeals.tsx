@@ -380,6 +380,19 @@ export default function AdminDeals() {
                 />
               </div>
 
+              {/* Loja */}
+              <div>
+                <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Loja Parceira</label>
+                <input 
+                  required 
+                  type="text" 
+                  value={formData.store} 
+                  onChange={e => setFormData({...formData, store: e.target.value})} 
+                  className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary focus:bg-white transition-all font-label-bold" 
+                  placeholder="Ex: Amazon, Mercado Livre..." 
+                />
+              </div>
+
               {/* Categoria */}
               <div>
                 <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Categoria</label>

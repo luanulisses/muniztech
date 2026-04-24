@@ -277,6 +277,37 @@ export default function OfferLanding() {
             </div>
           </div>
         </div>
+      {/* ── SEÇÃO DE TRANSPARÊNCIA ── */}
+      <div className="max-w-6xl mx-auto px-4 md:px-8 mt-12 mb-8">
+        <div className="bg-white rounded-[2rem] md:rounded-[3rem] p-8 md:p-12 border border-surface-container-high shadow-sm grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <div className="space-y-3">
+             <div className="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <ShieldCheck className="w-6 h-6" />
+             </div>
+             <h4 className="font-black text-on-surface uppercase tracking-tight text-sm">Link Seguro</h4>
+             <p className="text-xs font-label-bold text-on-surface-variant leading-relaxed">
+               Todos os links são verificados pela nossa equipe para garantir que você está em uma loja oficial.
+             </p>
+          </div>
+          <div className="space-y-3">
+             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Handshake className="w-6 h-6" />
+             </div>
+             <h4 className="font-black text-on-surface uppercase tracking-tight text-sm">Apoio MunizTech</h4>
+             <p className="text-xs font-label-bold text-on-surface-variant leading-relaxed">
+               Ao comprar pelos nossos links, recebemos uma pequena comissão. Isso ajuda a manter nossas análises sinceras.
+             </p>
+          </div>
+          <div className="space-y-3">
+             <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <BadgeCheck className="w-6 h-6" />
+             </div>
+             <h4 className="font-black text-on-surface uppercase tracking-tight text-sm">Preço Real</h4>
+             <p className="text-xs font-label-bold text-on-surface-variant leading-relaxed">
+               Monitoramos o histórico de preços para garantir que o desconto é real e vale a pena para você.
+             </p>
+          </div>
+        </div>
       </div>
 
       {relatedProducts.length > 0 && (

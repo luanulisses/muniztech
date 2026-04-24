@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDeals } from '@/hooks/useDeals';
-import { Tag, ExternalLink, Filter, TrendingUp, Clock, Loader2, X, Check, ShoppingCart } from 'lucide-react';
+import { Tag, ExternalLink, Filter, TrendingUp, Clock, Loader2, X, Check, ShoppingCart, BadgeCheck, ShieldCheck, Handshake } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Deals() {
@@ -8,11 +8,14 @@ export default function Deals() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'newest' | 'price-asc' | 'price-desc'>('newest');
+  const [selectedStore, setSelectedStore] = useState<string | null>(null);
 
   const categories = Array.from(new Set(deals.map(d => d.category))).filter(Boolean);
+  const stores = Array.from(new Set(deals.map(d => d.store))).filter(Boolean);
 
   const filteredDeals = deals
     .filter(d => !selectedCategory || d.category === selectedCategory)
+    .filter(d => !selectedStore || d.store === selectedStore)
     .sort((a, b) => {
       if (sortBy === 'price-asc') return parseFloat(a.price.replace(/[^\d]/g, '')) - parseFloat(b.price.replace(/[^\d]/g, ''));
       if (sortBy === 'price-desc') return parseFloat(b.price.replace(/[^\d]/g, '')) - parseFloat(a.price.replace(/[^\d]/g, ''));
@@ -44,7 +47,7 @@ export default function Deals() {
               onClick={() => setIsFilterOpen(true)}
               className="flex items-center gap-2 px-4 py-3 bg-white border border-surface-container-high rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-surface-container-low transition-all shrink-0 shadow-sm"
             >
-              <Filter className="w-4 h-4 text-secondary" /> Filtros {selectedCategory && <span className="w-2 h-2 bg-secondary rounded-full" />}
+              <Filter className="w-4 h-4 text-secondary" /> Filtros {(selectedCategory || selectedStore) && <span className="w-2 h-2 bg-secondary rounded-full" />}
             </button>
             <button className="flex items-center gap-2 px-4 py-3 bg-white border border-surface-container-high rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-surface-container-low transition-all shrink-0 shadow-sm text-orange-600">
               🔥 Em Alta
@@ -113,6 +116,60 @@ export default function Deals() {
             </div>
           </>
         )}
+
+        {/* ── SEÇÃO DE PARCERIAS ── */}
+        <div className="bg-surface-container-low rounded-[40px] p-8 md:p-16 border border-surface-container-high space-y-12">
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/10 text-secondary rounded-full font-black text-[10px] uppercase tracking-widest border border-secondary/20">
+              <BadgeCheck className="w-4 h-4" />
+              <span>Transparência MunizTech</span>
+            </div>
+            <h2 className="text-2xl md:text-5xl font-black text-on-surface uppercase tracking-tight">Parcerias de Confiança</h2>
+            <p className="text-on-surface-variant font-label-bold max-w-2xl mx-auto">
+              Ao comprar através dos nossos links, você não paga nada a mais e ajuda a manter nosso trabalho independente. Selecionamos apenas lojas com selo de confiança e entrega garantida.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 grayscale opacity-60 hover:grayscale-0 transition-all duration-700">
+            {['Amazon', 'Mercado Livre', 'KaBuM!', 'Magazine Luiza', 'AliExpress', 'Shopee'].map((partner) => (
+              <div key={partner} className="flex flex-col items-center justify-center space-y-3 p-6 bg-white rounded-3xl border border-surface-container-high shadow-sm hover:shadow-lg transition-all hover:-translate-y-1">
+                <div className="w-12 h-12 bg-surface-container-low rounded-2xl flex items-center justify-center font-black text-xs text-on-surface-variant">
+                  {partner === 'Amazon' && 'AMZ'}
+                  {partner === 'Mercado Livre' && 'ML'}
+                  {partner === 'KaBuM!' && 'KBM'}
+                  {partner === 'Magazine Luiza' && 'MGL'}
+                  {partner === 'AliExpress' && 'ALI'}
+                  {partner === 'Shopee' && 'SHP'}
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-center">{partner}</span>
+              </div>
+            ))}
+          </div>
+          
+          <div className="pt-8 border-t border-surface-container-high flex flex-wrap justify-center gap-8 md:gap-16 opacity-70">
+            <div className="flex items-center gap-3">
+               <ShieldCheck className="w-6 h-6 text-green-600" />
+               <div className="text-left">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-on-surface">Links Verificados</div>
+                  <div className="text-[9px] font-label-bold text-on-surface-variant uppercase">Proteção Anti-Scam</div>
+               </div>
+            </div>
+            <div className="flex items-center gap-3">
+               <Clock className="w-6 h-6 text-blue-600" />
+               <div className="text-left">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-on-surface">Preços Atuais</div>
+                  <div className="text-[9px] font-label-bold text-on-surface-variant uppercase">Monitoramento 24h</div>
+               </div>
+            </div>
+            <div className="flex items-center gap-3">
+               <Handshake className="w-6 h-6 text-secondary" />
+               <div className="text-left">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-on-surface">Apoio ao Canal</div>
+                  <div className="text-[9px] font-label-bold text-on-surface-variant uppercase">Sem Custo Adicional</div>
+               </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* FILTER OVERLAY */}
@@ -144,6 +201,27 @@ export default function Deals() {
                       className={`flex items-center justify-between p-3 md:p-4 rounded-xl border-2 transition-all font-black text-xs uppercase ${selectedCategory === cat ? 'border-secondary bg-secondary/5 text-secondary' : 'border-surface-container-high text-on-surface-variant'}`}
                     >
                       {cat} {selectedCategory === cat && <Check className="w-4 h-4" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-secondary">Lojas Parceiras</label>
+                <div className="grid grid-cols-1 gap-2">
+                  <button 
+                    onClick={() => setSelectedStore(null)}
+                    className={`flex items-center justify-between p-3 md:p-4 rounded-xl border-2 transition-all font-black text-xs uppercase ${!selectedStore ? 'border-secondary bg-secondary/5 text-secondary' : 'border-surface-container-high text-on-surface-variant'}`}
+                  >
+                    Todas {!selectedStore && <Check className="w-4 h-4" />}
+                  </button>
+                  {stores.map(store => (
+                    <button 
+                      key={store}
+                      onClick={() => setSelectedStore(store)}
+                      className={`flex items-center justify-between p-3 md:p-4 rounded-xl border-2 transition-all font-black text-xs uppercase ${selectedStore === store ? 'border-secondary bg-secondary/5 text-secondary' : 'border-surface-container-high text-on-surface-variant'}`}
+                    >
+                      {store} {selectedStore === store && <Check className="w-4 h-4" />}
                     </button>
                   ))}
                 </div>
