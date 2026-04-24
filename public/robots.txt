@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://muniztech.com.br/sitemap.xml
