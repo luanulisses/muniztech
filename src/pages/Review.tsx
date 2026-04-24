@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useReview, useReviews } from '@/hooks/useReviews';
 import { Star, Check, X, ArrowRight, ShoppingCart, Info, Loader2, User, Calendar, MessageSquareText, Search, BadgeCheck, Handshake, ExternalLink, Swords, Trophy, Minus } from 'lucide-react';
@@ -214,6 +214,15 @@ function ReviewList() {
 function ReviewDetail({ slug }: { slug: string }) {
   const { review, loading } = useReview(slug);
   const { reviews: allReviews } = useReviews();
+
+  useEffect(() => {
+    if (review) {
+      document.title = `${review.title} | MunizTech`;
+    }
+    return () => {
+      document.title = 'MunizTech | Tecnologia com Verdade';
+    };
+  }, [review]);
 
   if (loading) {
     return (
