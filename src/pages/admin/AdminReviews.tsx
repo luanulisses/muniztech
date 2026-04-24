@@ -29,6 +29,7 @@ interface ReviewDB {
   date: string;
 
   // Comparativo
+  product1_name?: string;
   product2_name?: string;
   product2_rating?: string;
   product2_pros?: string[];
@@ -62,6 +63,7 @@ export default function AdminReviews() {
     for_whom: '',
     buy_link: '',
     buy_price: '',
+    product1_name: '',
     author: 'Muniz',
     date: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
     product2_pros: [],
@@ -110,6 +112,7 @@ export default function AdminReviews() {
         for_whom: '',
         buy_link: '',
         buy_price: '',
+        product1_name: '',
         author: 'Muniz',
         date: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
         product2_pros: [],
@@ -299,6 +302,38 @@ export default function AdminReviews() {
                     </div>
                   </div>
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Autor</label>
+                    <input
+                      type="text"
+                      value={formData.author}
+                      onChange={e => setFormData({...formData, author: e.target.value})}
+                      className="w-full p-4 bg-white border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black text-xs shadow-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Data da Publicação</label>
+                    <input
+                      type="text"
+                      value={formData.date}
+                      onChange={e => setFormData({...formData, date: e.target.value})}
+                      className="w-full p-4 bg-white border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black text-xs shadow-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-surface-container-high flex flex-wrap gap-4">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-100 rounded-xl">
+                    <Check className="w-4 h-4 text-green-600" />
+                    <span className="text-[10px] font-black text-green-700 uppercase tracking-widest">Parceria Amazon Ativa</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-xl">
+                    <Info className="w-4 h-4 text-blue-600" />
+                    <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest">Cálculo de Preço Automático</span>
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
@@ -315,6 +350,17 @@ export default function AdminReviews() {
                   </div>
 
                   <div className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Nome do Produto 1</label>
+                      <input
+                        type="text"
+                        value={formData.product1_name}
+                        onChange={e => setFormData({...formData, product1_name: e.target.value})}
+                        className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black"
+                        placeholder="Ex: Nintendo Switch"
+                      />
+                    </div>
+
                     <ImageUpload 
                       currentImage={formData.image} 
                       onUpload={(url) => setFormData({...formData, image: url})} 

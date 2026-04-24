@@ -232,7 +232,7 @@ function ReviewDetail({ slug }: { slug: string }) {
                 <img src={review.image} className="max-h-full object-contain" alt={review.title} />
               </div>
               <h3 className="text-xl md:text-2xl font-black text-center text-on-surface uppercase tracking-tighter">
-                {review.title.split(' vs ')[0] || 'Produto 1'}
+                {review.product1Name || review.title.split(' vs ')[0] || 'Produto 1'}
               </h3>
             </div>
 
@@ -296,7 +296,7 @@ function ReviewDetail({ slug }: { slug: string }) {
                   {/* Produto 1 */}
                   <div className="space-y-4">
                     <div className="bg-surface-container-low px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-on-surface-variant border border-surface-container-high w-fit">
-                      {review.title.split(' vs ')[0] || 'Produto 1'}
+                      {review.product1Name || review.title.split(' vs ')[0] || 'Produto 1'}
                     </div>
                     <div className="bg-white rounded-3xl border border-surface-container-high overflow-hidden shadow-sm">
                       <div className="p-6 bg-green-50/30 border-b border-green-100">
@@ -512,7 +512,7 @@ function ReviewDetail({ slug }: { slug: string }) {
               {review.type === 'comparativo' ? (
                  <div className="space-y-3">
                     <div className="p-3 bg-surface-container-low rounded-xl border border-surface-container-high group">
-                       <div className="text-[9px] font-black uppercase text-on-surface-variant mb-1">{review.title.split(' vs ')[0]}</div>
+                       <div className="text-[9px] font-black uppercase text-on-surface-variant mb-1">{review.product1Name || review.title.split(' vs ')[0]}</div>
                        <div className="flex items-center justify-between">
                           <div className="font-black text-on-surface">{review.buyPrice}</div>
                           <a href={review.buyLink} target="_blank" rel="noopener noreferrer" className="p-2 bg-secondary text-white rounded-lg group-hover:scale-110 transition-transform"><ShoppingCart className="w-3 h-3" /></a>

@@ -20,7 +20,8 @@ export interface Review {
   buyLink?: string;
   buyPrice?: string;
 
-  // Campos para Comparativo (Produto 2)
+  // Campos para Comparativo (Produto 1 & 2)
+  product1Name?: string;
   product2Name?: string;
   product2Rating?: string;
   product2Pros?: string[];
