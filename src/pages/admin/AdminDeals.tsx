@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { 
   Plus, Search, Edit2, Trash2, 
-  X, Loader2, TrendingUp
+  X, Loader2, TrendingUp, Store
 } from 'lucide-react';
 import ImageUpload from '@/components/admin/ImageUpload';
 
@@ -21,6 +21,87 @@ interface DealDB {
   views: number;
 }
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Converte valor bruto digitado em número puro */
+function parsePrice(raw: string): number {
+  // Remove tudo que não é dígito ou vírgula/ponto
+  const clean = raw.replace(/[^\d,\.]/g, '');
+  // Se tiver vírgula como separador decimal brasileiro
+  const normalized = clean.replace(/\./g, '').replace(',', '.');
+  return parseFloat(normalized) || 0;
+}
+
+/** Formata número para padrão BRL: R$ 6.569,00 */
+function formatBRL(value: number): string {
+  if (!value || isNaN(value)) return '';
+  return value.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+  });
+}
+
+/** Handler de input de preço: ao digitar, mascara em tempo real */
+function maskPrice(raw: string): string {
+  // Mantém apenas dígitos
+  const digits = raw.replace(/\D/g, '');
+  if (!digits) return '';
+  const num = parseInt(digits, 10) / 100;
+  return num.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+  });
+}
+
+/** Calcula o percentual de desconto entre preço original e preço com desconto */
+function calcDiscount(price: string, originalPrice: string): string {
+  const p = parsePrice(price);
+  const o = parsePrice(originalPrice);
+  if (!p || !o || o <= p) return '';
+  const pct = Math.round(((o - p) / o) * 100);
+  return `${pct}%`;
+}
+
+// Mapeamento de domínios para nome de parceria
+const STORE_MAP: Record<string, string> = {
+  'amazon.com.br': 'Amazon',
+  'amzn.to': 'Amazon',
+  'amzn.com': 'Amazon',
+  'mercadolivre.com.br': 'Mercado Livre',
+  'mercadolibre.com': 'Mercado Livre',
+  'shopee.com.br': 'Shopee',
+  'americanas.com.br': 'Americanas',
+  'magazineluiza.com.br': 'Magazine Luiza',
+  'magalu.com': 'Magazine Luiza',
+  'submarino.com.br': 'Submarino',
+  'casasbahia.com.br': 'Casas Bahia',
+  'kabum.com.br': 'KaBuM!',
+  'aliexpress.com': 'AliExpress',
+  'terabyteshop.com.br': 'Terabyte Shop',
+  'pichau.com.br': 'Pichau',
+};
+
+/** Detecta a loja pelo link do afiliado */
+function detectStore(url: string): string {
+  if (!url) return '';
+  try {
+    const hostname = new URL(url).hostname.replace('www.', '');
+    for (const [domain, name] of Object.entries(STORE_MAP)) {
+      if (hostname.includes(domain)) return name;
+    }
+  } catch {
+    // url inválida ainda sendo digitada
+    for (const [domain, name] of Object.entries(STORE_MAP)) {
+      if (url.toLowerCase().includes(domain)) return name;
+    }
+  }
+  return '';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function AdminDeals() {
   const [deals, setDeals] = useState<DealDB[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -28,6 +109,7 @@ export default function AdminDeals() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDeal, setEditingDeal] = useState<DealDB | null>(null);
+  const [detectedStore, setDetectedStore] = useState('');
   
   const [formData, setFormData] = useState({
     title: '',
@@ -73,6 +155,7 @@ export default function AdminDeals() {
         category: deal.category,
         is_achadinho: deal.is_achadinho
       });
+      setDetectedStore(detectStore(deal.link));
     } else {
       setEditingDeal(null);
       setFormData({
@@ -87,6 +170,7 @@ export default function AdminDeals() {
         category: categories[0]?.name || 'Smartphones',
         is_achadinho: false
       });
+      setDetectedStore('');
     }
     setIsModalOpen(true);
   };
@@ -102,7 +186,9 @@ export default function AdminDeals() {
     setLoading(true);
 
     const slug = formData.slug || formData.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-    const dealData = { ...formData, slug };
+    // Usa loja detectada se o campo store não foi alterado manualmente
+    const store = formData.store || detectedStore || 'Loja Parceira';
+    const dealData = { ...formData, slug, store };
 
     if (editingDeal) {
       await supabase.from('deals').update(dealData).eq('id', editingDeal.id);
@@ -113,6 +199,31 @@ export default function AdminDeals() {
     setIsModalOpen(false);
     fetchData();
   };
+
+  // ── Handlers de preço com máscara ──────────────────────────────────────────
+
+  const handlePriceChange = (raw: string, field: 'price' | 'original_price') => {
+    const masked = maskPrice(raw);
+    const updated = { ...formData, [field]: masked };
+    // Recalcula desconto automaticamente
+    const newDiscount = calcDiscount(
+      field === 'price' ? masked : formData.price,
+      field === 'original_price' ? masked : formData.original_price
+    );
+    setFormData({ ...updated, discount: newDiscount || formData.discount });
+  };
+
+  const handleLinkChange = (url: string) => {
+    const store = detectStore(url);
+    setDetectedStore(store);
+    setFormData({ 
+      ...formData, 
+      link: url,
+      store: store || formData.store
+    });
+  };
+
+  // ────────────────────────────────────────────────────────────────────────────
 
   const filteredDeals = deals.filter(deal => 
     deal.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -209,11 +320,13 @@ export default function AdminDeals() {
             </div>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Título */}
               <div className="md:col-span-2">
                 <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Título do Produto</label>
                 <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary focus:bg-white transition-all font-label-bold" placeholder="Ex: Apple iPhone 15 Pro Max" />
               </div>
 
+              {/* Imagem */}
               <div className="md:col-span-2">
                 <ImageUpload 
                   currentImage={formData.image} 
@@ -222,21 +335,52 @@ export default function AdminDeals() {
                 />
               </div>
 
+              {/* Preço com Desconto */}
               <div>
                 <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Preço com Desconto</label>
-                <input required type="text" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-label-bold" placeholder="R$ 0,00" />
+                <input
+                  required
+                  type="text"
+                  inputMode="numeric"
+                  value={formData.price}
+                  onChange={e => handlePriceChange(e.target.value, 'price')}
+                  className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-label-bold"
+                  placeholder="R$ 0,00"
+                />
               </div>
 
+              {/* Preço Original */}
               <div>
                 <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Preço Original</label>
-                <input required type="text" value={formData.original_price} onChange={e => setFormData({...formData, original_price: e.target.value})} className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-label-bold" placeholder="R$ 0,00" />
+                <input
+                  required
+                  type="text"
+                  inputMode="numeric"
+                  value={formData.original_price}
+                  onChange={e => handlePriceChange(e.target.value, 'original_price')}
+                  className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-label-bold"
+                  placeholder="R$ 0,00"
+                />
               </div>
 
+              {/* Porcentagem (calculada automaticamente) */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Porcentagem</label>
-                <input type="text" value={formData.discount} onChange={e => setFormData({...formData, discount: e.target.value})} className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-label-bold" placeholder="20%" />
+                <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">
+                  Porcentagem de Desconto
+                  {formData.discount && (
+                    <span className="ml-2 px-2 py-0.5 bg-secondary/10 text-secondary rounded-full text-[10px] normal-case">calculado automaticamente</span>
+                  )}
+                </label>
+                <input
+                  type="text"
+                  value={formData.discount}
+                  onChange={e => setFormData({...formData, discount: e.target.value})}
+                  className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-label-bold"
+                  placeholder="Ex: 20%"
+                />
               </div>
 
+              {/* Categoria */}
               <div>
                 <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Categoria</label>
                 <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-label-bold appearance-none">
@@ -244,16 +388,35 @@ export default function AdminDeals() {
                 </select>
               </div>
 
+              {/* Link de Afiliado com detecção de loja */}
               <div className="md:col-span-2">
                 <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Link de Afiliado</label>
-                <input required type="url" value={formData.link} onChange={e => setFormData({...formData, link: e.target.value})} className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-label-bold" placeholder="https://..." />
+                <input
+                  required
+                  type="url"
+                  value={formData.link}
+                  onChange={e => handleLinkChange(e.target.value)}
+                  className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-label-bold"
+                  placeholder="https://..."
+                />
+                {/* Badge de loja detectada */}
+                {detectedStore && (
+                  <div className="mt-2 flex items-center gap-2 px-3 py-2 bg-secondary/10 border border-secondary/20 rounded-xl w-fit">
+                    <Store className="w-4 h-4 text-secondary" />
+                    <span className="text-xs font-black text-secondary uppercase tracking-widest">
+                      Parceria com a {detectedStore}
+                    </span>
+                  </div>
+                )}
               </div>
 
+              {/* Achadinho */}
               <div className="md:col-span-2 flex items-center gap-4 p-4 bg-surface-container-low rounded-2xl">
                 <input type="checkbox" id="is_achadinho" checked={formData.is_achadinho} onChange={e => setFormData({...formData, is_achadinho: e.target.checked})} className="w-5 h-5 text-secondary border-surface-container-high rounded" />
                 <label htmlFor="is_achadinho" className="text-sm font-black text-on-surface uppercase tracking-widest">Marcar como "Achadinho"</label>
               </div>
 
+              {/* Botão */}
               <div className="md:col-span-2 pt-4">
                 <button type="submit" disabled={loading} className="w-full py-4 bg-secondary text-white rounded-2xl font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95">
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : editingDeal ? 'Salvar Alterações' : 'Publicar Oferta'}
