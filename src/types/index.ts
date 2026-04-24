@@ -9,6 +9,8 @@ export interface Review {
   date: string;
   rating: number;
   featured?: boolean;
+  type?: 'review' | 'comparativo';
+  content?: string;
 
   // Novos campos para conversão
   benefits?: string[];
@@ -17,6 +19,16 @@ export interface Review {
   forWhom?: string;
   buyLink?: string;
   buyPrice?: string;
+
+  // Campos para Comparativo (Produto 2)
+  product2Name?: string;
+  product2Rating?: string;
+  product2Pros?: string[];
+  product2Cons?: string[];
+  product2Link?: string;
+  product2Price?: string;
+  product2Image?: string;
+  comparisonSpecs?: { label: string; p1: string; p2: string }[];
 }
 
 export interface Deal {

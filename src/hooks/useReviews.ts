@@ -28,12 +28,22 @@ export function useReviews(limit?: number) {
           author: r.author,
           date: r.date,
           rating: parseFloat(r.rating),
+          type: r.type || 'review',
+          content: r.content,
           benefits: r.benefits,
           pros: r.pros,
           cons: r.cons,
           forWhom: r.for_whom,
           buyLink: r.buy_link,
-          buyPrice: r.buy_price
+          buyPrice: r.buy_price,
+          product2Name: r.product2_name,
+          product2Rating: r.product2_rating,
+          product2Pros: r.product2_pros,
+          product2Cons: r.product2_cons,
+          product2Link: r.product2_link,
+          product2Price: r.product2_price,
+          product2Image: r.product2_image,
+          comparisonSpecs: r.comparison_specs
         }));
         setReviews(mapped);
       }
@@ -71,12 +81,22 @@ export function useReview(slug: string) {
           author: data.author,
           date: data.date,
           rating: parseFloat(data.rating),
+          type: data.type || 'review',
+          content: data.content,
           benefits: data.benefits,
           pros: data.pros,
           cons: data.cons,
           forWhom: data.for_whom,
           buyLink: data.buy_link,
-          buyPrice: data.buy_price
+          buyPrice: data.buy_price,
+          product2Name: data.product2_name,
+          product2Rating: data.product2_rating,
+          product2Pros: data.product2_pros,
+          product2Cons: data.product2_cons,
+          product2Link: data.product2_link,
+          product2Price: data.product2_price,
+          product2Image: data.product2_image,
+          comparisonSpecs: data.comparison_specs
         });
       }
       setLoading(false);

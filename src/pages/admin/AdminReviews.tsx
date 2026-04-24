@@ -16,6 +16,8 @@ interface ReviewDB {
   rating: string;
   image: string;
   excerpt: string;
+  content: string;
+  type: 'review' | 'comparativo';
   benefits: string[];
   pros: string[];
   cons: string[];
@@ -24,6 +26,16 @@ interface ReviewDB {
   buy_price: string;
   author: string;
   date: string;
+
+  // Comparativo
+  product2_name?: string;
+  product2_rating?: string;
+  product2_pros?: string[];
+  product2_cons?: string[];
+  product2_link?: string;
+  product2_price?: string;
+  product2_image?: string;
+  comparison_specs?: { label: string; p1: string; p2: string }[];
 }
 
 export default function AdminReviews() {
@@ -41,6 +53,8 @@ export default function AdminReviews() {
     rating: '9.0',
     image: '',
     excerpt: '',
+    content: '',
+    type: 'review',
     benefits: [],
     pros: [],
     cons: [],
@@ -48,7 +62,10 @@ export default function AdminReviews() {
     buy_link: '',
     buy_price: '',
     author: 'Muniz',
-    date: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+    date: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
+    product2_pros: [],
+    product2_cons: [],
+    comparison_specs: []
   });
 
   const fetchReviews = async () => {
@@ -69,7 +86,12 @@ export default function AdminReviews() {
   const handleOpenModal = (review?: ReviewDB) => {
     if (review) {
       setEditingReview(review);
-      setFormData(review);
+      setFormData({
+        ...review,
+        product2_pros: review.product2_pros || [],
+        product2_cons: review.product2_cons || [],
+        comparison_specs: review.comparison_specs || []
+      });
     } else {
       setEditingReview(null);
       setFormData({
@@ -79,6 +101,8 @@ export default function AdminReviews() {
         rating: '9.0',
         image: '',
         excerpt: '',
+        content: '',
+        type: 'review',
         benefits: [],
         pros: [],
         cons: [],
@@ -86,7 +110,10 @@ export default function AdminReviews() {
         buy_link: '',
         buy_price: '',
         author: 'Muniz',
-        date: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+        date: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
+        product2_pros: [],
+        product2_cons: [],
+        comparison_specs: []
       });
     }
     setIsModalOpen(true);
@@ -109,7 +136,7 @@ export default function AdminReviews() {
     fetchReviews();
   };
 
-  const handleArrayInput = (field: 'benefits' | 'pros' | 'cons', value: string) => {
+  const handleArrayInput = (field: 'benefits' | 'pros' | 'cons' | 'product2_pros' | 'product2_cons', value: string) => {
     if (!value.trim()) return;
     setFormData({
       ...formData,
@@ -117,10 +144,24 @@ export default function AdminReviews() {
     });
   };
 
-  const removeArrayItem = (field: 'benefits' | 'pros' | 'cons', index: number) => {
+  const removeArrayItem = (field: 'benefits' | 'pros' | 'cons' | 'product2_pros' | 'product2_cons', index: number) => {
     const newArr = [...(formData[field] || [])];
     newArr.splice(index, 1);
     setFormData({ ...formData, [field]: newArr });
+  };
+
+  const addSpec = (label: string, p1: string, p2: string) => {
+    if (!label.trim()) return;
+    setFormData({
+      ...formData,
+      comparison_specs: [...(formData.comparison_specs || []), { label, p1, p2 }]
+    });
+  };
+
+  const removeSpec = (index: number) => {
+    const newSpecs = [...(formData.comparison_specs || [])];
+    newSpecs.splice(index, 1);
+    setFormData({ ...formData, comparison_specs: newSpecs });
   };
 
   return (
@@ -200,15 +241,34 @@ export default function AdminReviews() {
             </div>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="md:col-span-2 flex items-center justify-center p-1 bg-surface-container-low rounded-2xl w-fit mx-auto">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, type: 'review' })}
+                  className={`px-8 py-2.5 rounded-xl font-black uppercase tracking-widest text-xs transition-all ${formData.type === 'review' ? 'bg-white text-secondary shadow-sm' : 'text-on-surface-variant'}`}
+                >
+                  Análise Simples
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, type: 'comparativo' })}
+                  className={`px-8 py-2.5 rounded-xl font-black uppercase tracking-widest text-xs transition-all ${formData.type === 'comparativo' ? 'bg-white text-secondary shadow-sm' : 'text-on-surface-variant'}`}
+                >
+                  Comparativo (VS)
+                </button>
+              </div>
+
               <div className="md:col-span-2 space-y-4">
-                <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant">Título do Artigo</label>
+                <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant">
+                  {formData.type === 'comparativo' ? 'Título do Duelo (Ex: A vs B)' : 'Título do Artigo'}
+                </label>
                 <input
                   required
                   type="text"
                   value={formData.title}
                   onChange={e => setFormData({...formData, title: e.target.value})}
                   className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary focus:bg-white transition-all font-black text-xl"
-                  placeholder="Ex: iPhone 17 Pro Max: A Revolução das Câmeras"
+                  placeholder={formData.type === 'comparativo' ? 'Ex: Nintendo Switch vs Switch OLED' : 'Ex: iPhone 17 Pro Max: A Revolução das Câmeras'}
                 />
               </div>
 
@@ -231,7 +291,9 @@ export default function AdminReviews() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Nota Editorial (0-10)</label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">
+                    {formData.type === 'comparativo' ? 'Nota Geral do Duelo' : 'Nota Editorial (0-10)'}
+                  </label>
                   <input
                     type="text"
                     value={formData.rating}
@@ -241,6 +303,137 @@ export default function AdminReviews() {
                   />
                 </div>
               </div>
+
+              {/* Seção Produto 2 (Apenas se for Comparativo) */}
+              {formData.type === 'comparativo' && (
+                <div className="md:col-span-2 p-8 bg-surface-container-lowest border-2 border-dashed border-surface-container-high rounded-[2rem] space-y-8">
+                  <div className="flex items-center gap-3 border-b border-surface-container-high pb-4">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center font-black text-secondary">2</div>
+                    <h3 className="font-black uppercase tracking-tighter text-xl">Informações do Segundo Produto</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Nome do Produto 2</label>
+                        <input
+                          type="text"
+                          value={formData.product2_name}
+                          onChange={e => setFormData({...formData, product2_name: e.target.value})}
+                          className="w-full p-4 bg-white border-2 border-surface-container-low rounded-2xl focus:border-secondary transition-all font-black"
+                          placeholder="Ex: Nintendo Switch OLED"
+                        />
+                      </div>
+                      <ImageUpload 
+                        currentImage={formData.product2_image} 
+                        onUpload={(url) => setFormData({...formData, product2_image: url})} 
+                        label="Imagem Produto 2"
+                      />
+                      <div>
+                        <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Nota Produto 2</label>
+                        <input
+                          type="text"
+                          value={formData.product2_rating}
+                          onChange={e => setFormData({...formData, product2_rating: e.target.value})}
+                          className="w-full p-4 bg-white border-2 border-surface-container-low rounded-2xl focus:border-secondary transition-all font-black text-secondary"
+                          placeholder="9.1"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Preço Ref. Produto 2</label>
+                        <input
+                          type="text"
+                          value={formData.product2_price}
+                          onChange={e => setFormData({...formData, product2_price: e.target.value})}
+                          className="w-full p-4 bg-white border-2 border-surface-container-low rounded-2xl focus:border-secondary transition-all font-black"
+                          placeholder="R$ 2.100,00"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Link Afiliado Produto 2</label>
+                        <input
+                          type="url"
+                          value={formData.product2_link}
+                          onChange={e => setFormData({...formData, product2_link: e.target.value})}
+                          className="w-full p-4 bg-white border-2 border-surface-container-low rounded-2xl focus:border-secondary transition-all font-label-bold"
+                          placeholder="https://amzn.to/..."
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label className="block text-[10px] font-black uppercase tracking-widest text-blue-600">Prós P2</label>
+                          <div className="flex gap-1">
+                            <input id="p2-pro-input" type="text" className="flex-1 p-2 bg-white border border-surface-container-high rounded-lg text-[10px] font-label-bold" placeholder="Add..." />
+                            <button type="button" onClick={() => {
+                              const el = document.getElementById('p2-pro-input') as HTMLInputElement;
+                              handleArrayInput('product2_pros', el.value);
+                              el.value = '';
+                            }} className="p-2 bg-blue-600 text-white rounded-lg"><Plus className="w-3 h-3" /></button>
+                          </div>
+                          <ul className="space-y-1">
+                            {formData.product2_pros?.map((item, i) => (
+                              <li key={i} className="flex items-center justify-between p-1.5 bg-blue-50 rounded-lg text-[9px] font-label-bold">
+                                <span className="truncate">{item}</span>
+                                <button type="button" onClick={() => removeArrayItem('product2_pros', i)} className="text-red-500"><X className="w-2.5 h-2.5" /></button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="block text-[10px] font-black uppercase tracking-widest text-red-600">Contras P2</label>
+                          <div className="flex gap-1">
+                            <input id="p2-con-input" type="text" className="flex-1 p-2 bg-white border border-surface-container-high rounded-lg text-[10px] font-label-bold" placeholder="Add..." />
+                            <button type="button" onClick={() => {
+                              const el = document.getElementById('p2-con-input') as HTMLInputElement;
+                              handleArrayInput('product2_cons', el.value);
+                              el.value = '';
+                            }} className="p-2 bg-red-600 text-white rounded-lg"><Plus className="w-3 h-3" /></button>
+                          </div>
+                          <ul className="space-y-1">
+                            {formData.product2_cons?.map((item, i) => (
+                              <li key={i} className="flex items-center justify-between p-1.5 bg-red-50 rounded-lg text-[9px] font-label-bold">
+                                <span className="truncate">{item}</span>
+                                <button type="button" onClick={() => removeArrayItem('product2_cons', i)} className="text-red-500"><X className="w-2.5 h-2.5" /></button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tabela de Especificações */}
+                  <div className="space-y-4 pt-4 border-t border-surface-container-high">
+                    <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant">Tabela Comparativa de Especificações</label>
+                    <div className="grid grid-cols-4 gap-2">
+                      <input id="spec-label" className="p-3 bg-white border border-surface-container-high rounded-xl text-xs font-black" placeholder="Característica (ex: Tela)" />
+                      <input id="spec-p1" className="p-3 bg-white border border-surface-container-high rounded-xl text-xs" placeholder="Valor Produto 1" />
+                      <input id="spec-p2" className="p-3 bg-white border border-surface-container-high rounded-xl text-xs" placeholder="Valor Produto 2" />
+                      <button type="button" onClick={() => {
+                        const l = document.getElementById('spec-label') as HTMLInputElement;
+                        const p1 = document.getElementById('spec-p1') as HTMLInputElement;
+                        const p2 = document.getElementById('spec-p2') as HTMLInputElement;
+                        addSpec(l.value, p1.value, p2.value);
+                        l.value = ''; p1.value = ''; p2.value = '';
+                      }} className="bg-secondary text-white rounded-xl font-black uppercase text-[10px]">Add Linha</button>
+                    </div>
+                    <div className="space-y-2">
+                      {formData.comparison_specs?.map((spec, i) => (
+                        <div key={i} className="grid grid-cols-4 gap-2 items-center p-2 bg-white rounded-xl border border-surface-container-high text-xs">
+                          <div className="font-black text-secondary">{spec.label}</div>
+                          <div className="truncate">{spec.p1}</div>
+                          <div className="truncate">{spec.p2}</div>
+                          <button type="button" onClick={() => removeSpec(i)} className="text-red-500 flex justify-center"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-6">
                 <div>
@@ -354,6 +547,18 @@ export default function AdminReviews() {
                   className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-label-bold"
                   placeholder="Ex: Criadores de conteúdo e profissionais liberais..."
                 />
+              </div>
+
+              <div className="md:col-span-2 space-y-4">
+                <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant">Conteúdo Completo (Análise Profunda / Veredito)</label>
+                <div className="bg-white rounded-2xl overflow-hidden border-2 border-surface-container-low focus-within:border-secondary transition-all">
+                  <ReactQuill 
+                    theme="snow"
+                    value={formData.content}
+                    onChange={val => setFormData({...formData, content: val})}
+                    className="h-64 mb-12"
+                  />
+                </div>
               </div>
 
               <div className="md:col-span-2 pt-8">
