@@ -90,7 +90,7 @@ export default function Deals() {
                   </div>
 
                   <div className="mt-2 md:mt-4 space-y-2 md:space-y-3 flex-grow flex flex-col">
-                    <div className="text-[8px] md:text-[10px] font-black text-on-surface-variant uppercase tracking-widest line-clamp-1">
+                    <div className="text-[8px] md:text-[10px] font-black text-on-surface-variant uppercase tracking-widest bg-surface-container-low w-fit px-2 py-0.5 rounded-md">
                       {deal.store}
                     </div>
 

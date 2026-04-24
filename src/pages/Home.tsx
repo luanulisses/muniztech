@@ -12,7 +12,10 @@ import {
   Eye,
   Send,
   Loader2,
-  Search as SearchIcon
+  Search as SearchIcon,
+  BadgeCheck,
+  ShieldCheck,
+  Handshake
 } from 'lucide-react';
 import { CATEGORIES } from '@/constants';
 import * as Icons from 'lucide-react';
@@ -191,6 +194,9 @@ export default function Home() {
                   <div className="flex items-center gap-1 text-[8px] md:text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-50 w-fit px-1.5 py-0.5 md:px-2 md:py-1 rounded-md">
                     <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" /> Últimas
                   </div>
+                  <div className="text-[8px] md:text-[10px] font-black text-on-surface-variant uppercase tracking-widest bg-surface-container-low px-1.5 py-0.5 md:px-2 md:py-1 rounded-md">
+                    {deal.store}
+                  </div>
                 </div>
                 <h3 className="font-black text-on-surface leading-tight line-clamp-2 text-[10px] md:text-base">
                   {deal.title}
@@ -259,6 +265,59 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* ── SEÇÃO DE PARCERIAS (CONFIANÇA) ── */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 w-full mt-8">
+        <div className="bg-white rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-16 border border-surface-container-high shadow-xl shadow-black/[0.02] relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/5 blur-[100px] -mr-32 -mt-32" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 blur-[100px] -ml-32 -mb-32" />
+          
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/10 text-secondary rounded-full font-black text-[10px] uppercase tracking-widest border border-secondary/20">
+                <BadgeCheck className="w-4 h-4" />
+                <span>Portal Verificado</span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-on-surface uppercase tracking-tight leading-tight">
+                Tecnologia com <span className="text-secondary">Verdade</span> e Parcerias Oficiais
+              </h2>
+              <p className="text-sm md:text-xl text-on-surface-variant font-label-bold leading-relaxed">
+                Selecionamos apenas lojas com selo de confiança e entrega garantida. Ao comprar pelos nossos links, você apoia o MunizTech sem pagar um centavo a mais.
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                <div className="flex items-center gap-3 p-4 bg-surface-container-low rounded-2xl border border-surface-container-high">
+                  <ShieldCheck className="w-8 h-8 text-green-600" />
+                  <div className="text-left">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-on-surface">Links Seguros</div>
+                    <div className="text-[9px] font-label-bold text-on-surface-variant uppercase">Proteção Anti-Fraude</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 bg-surface-container-low rounded-2xl border border-surface-container-high">
+                  <Handshake className="w-8 h-8 text-secondary" />
+                  <div className="text-left">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-on-surface">Apoio ao Canal</div>
+                    <div className="text-[9px] font-label-bold text-on-surface-variant uppercase">Sem Custos Extras</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6 opacity-60">
+              {['Amazon', 'Mercado Livre', 'KaBuM!', 'Magazine Luiza', 'AliExpress', 'Shopee'].map((partner) => (
+                <div key={partner} className="bg-surface-container-low p-6 rounded-[2rem] border border-surface-container-high flex flex-col items-center justify-center gap-3 hover:bg-white hover:shadow-lg transition-all group">
+                   <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-[10px] font-black text-on-surface-variant group-hover:text-secondary">
+                      {partner.substring(0, 3).toUpperCase()}
+                   </div>
+                   <span className="text-[9px] font-black uppercase tracking-widest text-on-surface-variant group-hover:text-on-surface text-center">
+                     {partner}
+                   </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 5. ANÁLISES DETALHADAS */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 w-full grid grid-cols-1 lg:grid-cols-3 gap-12 mt-4 md:mt-8">
