@@ -109,10 +109,10 @@ export default function Home() {
                   <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 px-3 py-1.5 md:px-4 md:py-2 bg-red-600 text-white text-[10px] md:text-sm font-black uppercase rounded-xl shadow-xl transform rotate-12 animate-pulse">
                     Em Alta!
                   </div>
-                  <div className="w-full max-w-sm md:max-w-md aspect-square md:aspect-auto md:h-[400px] overflow-hidden rounded-[32px] md:rounded-[40px] shadow-2xl shadow-black/10">
+                  <div className="w-full max-w-sm md:max-w-lg aspect-square rounded-[32px] md:rounded-[40px] shadow-2xl shadow-black/10 bg-surface-container-lowest flex items-center justify-center p-4">
                     <img
                       src={mainHeroProduct.image}
-                      className="w-full h-full object-contain md:object-cover bg-surface-container-lowest p-4 md:p-0 transition-transform duration-700 group-hover:scale-105"
+                      className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
                       alt={mainHeroProduct.title}
                     />
                   </div>
