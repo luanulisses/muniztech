@@ -147,14 +147,16 @@ function ReviewDetail({ slug }: { slug: string }) {
       {/* Imagem de capa */}
       {review.image && (
         <div className="max-w-5xl mx-auto px-4 md:px-8 mb-8 md:mb-12">
-          <div className="relative aspect-video rounded-[24px] md:rounded-[40px] overflow-hidden shadow-2xl bg-surface-container-low">
+          <div className="relative rounded-[24px] md:rounded-[40px] overflow-hidden shadow-2xl bg-surface-container-low flex items-center justify-center p-4 md:p-8 min-h-[240px] md:min-h-[360px]">
             <img
               src={review.image}
-              className="w-full h-full object-cover"
+              className="max-w-full max-h-[400px] object-contain"
               alt={review.title}
-              onError={(e) => { (e.currentTarget as HTMLImageElement).closest('div.relative')?.parentElement?.parentElement?.remove(); }}
+              onError={(e) => {
+                const wrapper = (e.currentTarget as HTMLImageElement).closest('.relative') as HTMLElement | null;
+                if (wrapper?.parentElement?.parentElement) wrapper.parentElement.parentElement.style.display = 'none';
+              }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
           </div>
         </div>
       )}
@@ -225,20 +227,26 @@ function ReviewDetail({ slug }: { slug: string }) {
             </div>
           </div>
 
-          {/* Conteúdo Rico */}
-          {review.content && (
+          {/* Conteúdo Rico — usa content HTML se existir, ou exibe o excerpt completo como corpo */}
+          {(review.content || review.excerpt) && (
             <div className="bg-white rounded-[24px] md:rounded-[32px] p-6 md:p-10 border border-surface-container-high shadow-sm">
-              <div
-                className="prose prose-sm md:prose-base max-w-none
-                  prose-headings:font-black prose-headings:text-on-surface prose-headings:uppercase prose-headings:tracking-tight prose-headings:mt-8 prose-headings:mb-3
-                  prose-p:text-on-surface-variant prose-p:leading-relaxed prose-p:font-label-bold prose-p:mb-4
-                  prose-strong:text-on-surface prose-strong:font-black
-                  prose-ul:space-y-1 prose-li:text-on-surface-variant prose-li:font-label-bold
-                  prose-img:rounded-2xl prose-img:shadow-md prose-img:w-full prose-img:object-cover
-                  prose-a:text-secondary prose-a:font-black prose-a:no-underline hover:prose-a:underline
-                  [&_*]:break-words [&_img]:max-w-full"
-                dangerouslySetInnerHTML={{ __html: review.content }}
-              />
+              {review.content ? (
+                <div
+                  className="prose prose-sm md:prose-base max-w-none
+                    prose-headings:font-black prose-headings:text-on-surface prose-headings:uppercase prose-headings:tracking-tight prose-headings:mt-8 prose-headings:mb-3
+                    prose-p:text-on-surface-variant prose-p:leading-relaxed prose-p:font-label-bold prose-p:mb-4
+                    prose-strong:text-on-surface prose-strong:font-black
+                    prose-ul:space-y-1 prose-li:text-on-surface-variant prose-li:font-label-bold
+                    prose-img:rounded-2xl prose-img:shadow-md prose-img:w-full prose-img:object-contain
+                    prose-a:text-secondary prose-a:font-black prose-a:no-underline hover:prose-a:underline
+                    [&_*]:break-words [&_img]:max-w-full"
+                  dangerouslySetInnerHTML={{ __html: review.content }}
+                />
+              ) : (
+                <p className="text-on-surface-variant font-label-bold text-base md:text-lg leading-relaxed whitespace-pre-wrap">
+                  {review.excerpt}
+                </p>
+              )}
             </div>
           )}
 
