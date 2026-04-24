@@ -126,7 +126,7 @@ function ReviewDetail({ slug }: { slug: string }) {
           <h1 className="text-2xl md:text-5xl lg:text-6xl font-black text-on-surface leading-tight tracking-tight">
             {review.title}
           </h1>
-          <p className="text-sm md:text-xl text-on-surface-variant font-label-bold max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm md:text-xl text-on-surface-variant font-label-bold max-w-2xl mx-auto leading-relaxed line-clamp-4">
             {review.excerpt}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-xs font-black uppercase tracking-widest text-on-surface-variant pt-4 border-t border-surface-container-high w-fit mx-auto">
@@ -145,12 +145,19 @@ function ReviewDetail({ slug }: { slug: string }) {
       </header>
 
       {/* Imagem de capa */}
-      <div className="max-w-5xl mx-auto px-4 md:px-8 mb-8 md:mb-20">
-        <div className="relative aspect-video md:aspect-[21/9] rounded-[24px] md:rounded-[40px] overflow-hidden shadow-2xl">
-          <img src={review.image} className="w-full h-full object-cover" alt={review.title} />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+      {review.image && (
+        <div className="max-w-5xl mx-auto px-4 md:px-8 mb-8 md:mb-12">
+          <div className="relative aspect-video rounded-[24px] md:rounded-[40px] overflow-hidden shadow-2xl bg-surface-container-low">
+            <img
+              src={review.image}
+              className="w-full h-full object-cover"
+              alt={review.title}
+              onError={(e) => { (e.currentTarget as HTMLImageElement).closest('div.relative')?.parentElement?.parentElement?.remove(); }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         {/* Conteúdo principal */}
@@ -220,8 +227,18 @@ function ReviewDetail({ slug }: { slug: string }) {
 
           {/* Conteúdo Rico */}
           {review.content && (
-            <div className="prose prose-sm md:prose-lg max-w-none prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-p:font-label-bold prose-p:text-on-surface-variant prose-img:rounded-[24px]">
-              <div dangerouslySetInnerHTML={{ __html: review.content }} />
+            <div className="bg-white rounded-[24px] md:rounded-[32px] p-6 md:p-10 border border-surface-container-high shadow-sm">
+              <div
+                className="prose prose-sm md:prose-base max-w-none
+                  prose-headings:font-black prose-headings:text-on-surface prose-headings:uppercase prose-headings:tracking-tight prose-headings:mt-8 prose-headings:mb-3
+                  prose-p:text-on-surface-variant prose-p:leading-relaxed prose-p:font-label-bold prose-p:mb-4
+                  prose-strong:text-on-surface prose-strong:font-black
+                  prose-ul:space-y-1 prose-li:text-on-surface-variant prose-li:font-label-bold
+                  prose-img:rounded-2xl prose-img:shadow-md prose-img:w-full prose-img:object-cover
+                  prose-a:text-secondary prose-a:font-black prose-a:no-underline hover:prose-a:underline
+                  [&_*]:break-words [&_img]:max-w-full"
+                dangerouslySetInnerHTML={{ __html: review.content }}
+              />
             </div>
           )}
 
