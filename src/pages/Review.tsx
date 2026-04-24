@@ -1,7 +1,35 @@
 import { useParams, Link } from 'react-router-dom';
 import { useReview, useReviews } from '@/hooks/useReviews';
-import { Star, Check, X, ArrowRight, ShoppingCart, Info, Loader2, User, Calendar, MessageSquareText, Search } from 'lucide-react';
+import { Star, Check, X, ArrowRight, ShoppingCart, Info, Loader2, User, Calendar, MessageSquareText, Search, BadgeCheck, Handshake, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+// ── Mapa de lojas parceiras (mesmo do OfferLanding) ───────────────────────────
+const REVIEW_STORE_MAP: Record<string, { color: string; bg: string; border: string; emoji: string; label: string; description: string }> = {
+  'amazon.com.br': { color: 'text-[#FF9900]', bg: 'bg-[#FF9900]/10', border: 'border-[#FF9900]/30', emoji: '🛒', label: 'Amazon', description: 'O maior marketplace do mundo. Compra 100% garantida.' },
+  'amzn.to':       { color: 'text-[#FF9900]', bg: 'bg-[#FF9900]/10', border: 'border-[#FF9900]/30', emoji: '🛒', label: 'Amazon', description: 'O maior marketplace do mundo. Compra 100% garantida.' },
+  'amzn.com':      { color: 'text-[#FF9900]', bg: 'bg-[#FF9900]/10', border: 'border-[#FF9900]/30', emoji: '🛒', label: 'Amazon', description: 'O maior marketplace do mundo. Compra 100% garantida.' },
+  'mercadolivre.com.br': { color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200', emoji: '🛍️', label: 'Mercado Livre', description: 'Plataforma líder na América Latina. Pagamento seguro.' },
+  'shopee.com.br':       { color: 'text-[#EE4D2D]', bg: 'bg-orange-50', border: 'border-orange-200', emoji: '🧧', label: 'Shopee', description: 'Preços baixos com entrega rápida e rastreada.' },
+  'magazineluiza.com.br':{ color: 'text-[#0080C9]', bg: 'bg-blue-50', border: 'border-blue-200', emoji: '🏪', label: 'Magazine Luiza', description: 'Uma das maiores redes varejistas do Brasil.' },
+  'magalu.com':          { color: 'text-[#0080C9]', bg: 'bg-blue-50', border: 'border-blue-200', emoji: '🏪', label: 'Magazine Luiza', description: 'Uma das maiores redes varejistas do Brasil.' },
+  'americanas.com.br':   { color: 'text-[#E60014]', bg: 'bg-red-50', border: 'border-red-100', emoji: '🏬', label: 'Americanas', description: 'Gigante do varejo brasileiro com entrega garantida.' },
+  'kabum.com.br':        { color: 'text-[#FF6A00]', bg: 'bg-orange-50', border: 'border-orange-200', emoji: '💻', label: 'KaBuM!', description: 'Especialista em tech com preços competitivos.' },
+};
+
+function getReviewStoreConfig(url: string) {
+  if (!url) return null;
+  try {
+    const hostname = new URL(url).hostname.replace('www.', '');
+    for (const [domain, cfg] of Object.entries(REVIEW_STORE_MAP)) {
+      if (hostname.includes(domain)) return cfg;
+    }
+  } catch {
+    for (const [domain, cfg] of Object.entries(REVIEW_STORE_MAP)) {
+      if (url.toLowerCase().includes(domain)) return cfg;
+    }
+  }
+  return null;
+}
 
 // ─── LIST VIEW ──────────────────────────────────────────────────────────────
 function ReviewList() {
@@ -274,13 +302,53 @@ function ReviewDetail({ slug }: { slug: string }) {
         <aside className="lg:col-span-4 space-y-6 md:space-y-8">
           <div className="lg:sticky lg:top-24 space-y-6 md:space-y-8">
             {/* Card de Compra */}
-            <div className="bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-xl border border-surface-container-high">
-              <div className="flex items-center justify-between mb-4 md:mb-6">
+            <div className="bg-white rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-xl border border-surface-container-high space-y-4">
+              <div className="flex items-center justify-between">
                 <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-on-surface-variant">Melhor Preço</span>
                 <span className="px-2 py-1 bg-green-100 text-green-700 text-[9px] md:text-[10px] font-black uppercase rounded-lg">Verificado</span>
               </div>
-              <div className="text-3xl md:text-4xl font-black text-on-surface mb-2">{review.buyPrice}</div>
-              <p className="text-[10px] md:text-xs text-on-surface-variant font-label-bold mb-5 md:mb-6">No boleto ou PIX com desconto</p>
+
+              <div className="text-3xl md:text-4xl font-black text-on-surface">{review.buyPrice}</div>
+              <p className="text-[10px] md:text-xs text-on-surface-variant font-label-bold">No boleto ou PIX com desconto</p>
+
+              {/* Bloco de Parceria */}
+              {(() => {
+                const cfg = getReviewStoreConfig(review.buyLink || '');
+                if (!cfg) return null;
+                return (
+                  <div className={`flex items-center gap-2.5 p-3 rounded-2xl border ${cfg.bg} ${cfg.border}`}>
+                    <span className="text-xl shrink-0">{cfg.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <span className={`font-black text-xs uppercase tracking-wider ${cfg.color}`}>
+                          Parceria com a {cfg.label}
+                        </span>
+                        <BadgeCheck className={`w-3.5 h-3.5 shrink-0 ${cfg.color}`} />
+                      </div>
+                      <p className="text-[10px] text-on-surface-variant font-label-bold leading-snug mt-0.5">
+                        {cfg.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Selos de confiança */}
+              <div className="flex flex-wrap gap-1.5">
+                <div className="flex items-center gap-1 px-2 py-1 bg-green-50 border border-green-200 rounded-lg">
+                  <BadgeCheck className="w-3 h-3 text-green-600 shrink-0" />
+                  <span className="text-[9px] font-black text-green-700 uppercase tracking-wider">Parceiro Verificado</span>
+                </div>
+                <div className="flex items-center gap-1 px-2 py-1 bg-blue-50 border border-blue-200 rounded-lg">
+                  <Handshake className="w-3 h-3 text-blue-600 shrink-0" />
+                  <span className="text-[9px] font-black text-blue-700 uppercase tracking-wider">Link Direto</span>
+                </div>
+                <div className="flex items-center gap-1 px-2 py-1 bg-purple-50 border border-purple-200 rounded-lg">
+                  <ShoppingCart className="w-3 h-3 text-purple-600 shrink-0" />
+                  <span className="text-[9px] font-black text-purple-700 uppercase tracking-wider">Compra Garantida</span>
+                </div>
+              </div>
+
               <a
                 href={review.buyLink}
                 target="_blank"
