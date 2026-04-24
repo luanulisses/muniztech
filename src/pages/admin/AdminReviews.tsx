@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { 
   Plus, Search, Edit2, Trash2, 
-  X, Loader2, Star, Check, AlertCircle
+  X, Loader2, Star, Check, AlertCircle,
+  Info, Swords, Trophy, ShoppingCart
 } from 'lucide-react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
