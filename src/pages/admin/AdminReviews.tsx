@@ -230,8 +230,8 @@ export default function AdminReviews() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/50 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] shadow-2xl p-8 space-y-8">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-on-surface/50 backdrop-blur-sm overflow-y-auto pt-10 pb-10">
+          <div className="bg-white w-full max-w-7xl rounded-[2.5rem] shadow-2xl p-6 md:p-10 space-y-8 my-auto relative">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black text-on-surface uppercase tracking-tight">
                 {editingReview ? 'Editar Avaliação' : 'Nova Avaliação'}
@@ -285,18 +285,23 @@ export default function AdminReviews() {
                   </div>
                   <div className="md:col-span-4 space-y-2">
                     <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Categoria</label>
-                    <select
-                      value={formData.category}
-                      onChange={e => setFormData({...formData, category: e.target.value})}
-                      className="w-full p-4 bg-white border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black text-xs uppercase tracking-widest shadow-sm appearance-none"
-                    >
-                      {categories.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={formData.category}
+                        onChange={e => setFormData({...formData, category: e.target.value})}
+                        className="w-full p-4 bg-white border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black text-xs uppercase tracking-widest shadow-sm appearance-none"
+                      >
+                        {categories.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
+                        <Plus className="w-4 h-4 rotate-45" />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                 {/* ── SEÇÃO 1: PRODUTO 1 ── */}
                 <div className={`p-8 rounded-[2.5rem] border-2 transition-all space-y-8 ${formData.type === 'comparativo' ? 'border-secondary/30 bg-secondary/[0.02]' : 'border-surface-container-high bg-white'}`}>
                   <div className="flex items-center gap-4">
@@ -358,7 +363,7 @@ export default function AdminReviews() {
                     </div>
 
                     {/* Prós e Contras P1 */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6">
                       <div className="space-y-4">
                         <label className="block text-[10px] font-black uppercase tracking-widest text-blue-600">Pontos Positivos</label>
                         <div className="flex gap-2">
@@ -469,7 +474,7 @@ export default function AdminReviews() {
                       </div>
 
                       {/* Prós e Contras P2 */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6">
                         <div className="space-y-4">
                           <label className="block text-[10px] font-black uppercase tracking-widest text-blue-600">Pontos Positivos P2</label>
                           <div className="flex gap-2">
@@ -531,10 +536,10 @@ export default function AdminReviews() {
                       <Trophy className="w-6 h-6 text-secondary" />
                       <h3 className="font-black uppercase tracking-tight text-xl">Tabela Comparativa</h3>
                    </div>
-                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-surface-container-low p-4 rounded-2xl">
+                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-surface-container-low p-4 rounded-2xl">
                       <input id="spec-label" className="p-3 bg-white rounded-xl border border-transparent focus:border-secondary outline-none font-black text-xs" placeholder="Característica (Ex: Tela)" />
-                      <input id="spec-p1" className="p-3 bg-white rounded-xl border border-transparent focus:border-secondary outline-none font-label-bold text-xs" placeholder="Valor Produto 1" />
-                      <input id="spec-p2" className="p-3 bg-white rounded-xl border border-transparent focus:border-secondary outline-none font-label-bold text-xs" placeholder="Valor Produto 2" />
+                      <input id="spec-p1" className="p-3 bg-white rounded-xl border border-transparent focus:border-secondary outline-none font-label-bold text-xs" placeholder="Valor P1" />
+                      <input id="spec-p2" className="p-3 bg-white rounded-xl border border-transparent focus:border-secondary outline-none font-label-bold text-xs" placeholder="Valor P2" />
                       <button type="button" onClick={() => {
                         const l = document.getElementById('spec-label') as HTMLInputElement;
                         const v1 = document.getElementById('spec-p1') as HTMLInputElement;
@@ -543,7 +548,7 @@ export default function AdminReviews() {
                           setFormData({...formData, comparison_specs: [...(formData.comparison_specs || []), { label: l.value, p1: v1.value, p2: v2.value }]});
                           l.value = ''; v1.value = ''; v2.value = '';
                         }
-                      }} className="bg-secondary text-white rounded-xl font-black uppercase text-[10px] tracking-widest">Adicionar</button>
+                      }} className="bg-secondary text-white rounded-xl font-black uppercase text-[10px] tracking-widest h-10 sm:h-auto">Adicionar</button>
                    </div>
                    <div className="overflow-hidden rounded-2xl border border-surface-container-high">
                       <table className="w-full">
