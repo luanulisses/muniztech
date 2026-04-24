@@ -219,13 +219,11 @@ function ReviewDetail({ slug }: { slug: string }) {
           </div>
 
           {/* Conteúdo Rico */}
-          <div className="prose prose-sm md:prose-lg max-w-none prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-p:font-label-bold prose-p:text-on-surface-variant prose-img:rounded-[24px]">
-            {review.content ? (
+          {review.content && (
+            <div className="prose prose-sm md:prose-lg max-w-none prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-p:font-label-bold prose-p:text-on-surface-variant prose-img:rounded-[24px]">
               <div dangerouslySetInnerHTML={{ __html: review.content }} />
-            ) : (
-              <p className="italic text-on-surface-variant">Esta análise completa está em desenvolvimento...</p>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* CTA Final */}
           <div className="bg-slate-900 rounded-[24px] md:rounded-[40px] p-8 md:p-16 text-center space-y-6 md:space-y-8 relative overflow-hidden">
