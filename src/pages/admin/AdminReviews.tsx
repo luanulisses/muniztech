@@ -130,10 +130,15 @@ export default function AdminReviews() {
     const slug = formData.slug || formData.title?.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
     const reviewData = { ...formData, slug };
 
-    if (editingReview) {
-      await supabase.from('reviews').update(reviewData).eq('id', editingReview.id);
-    } else {
-      await supabase.from('reviews').insert([reviewData]);
+    const { error } = editingReview 
+      ? await supabase.from('reviews').update(reviewData).eq('id', editingReview.id)
+      : await supabase.from('reviews').insert([reviewData]);
+
+    if (error) {
+      console.error('Erro ao salvar:', error);
+      alert('Erro ao salvar: ' + error.message);
+      setLoading(false);
+      return;
     }
 
     setIsModalOpen(false);
