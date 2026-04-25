@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { 
   Plus, Search, Edit2, Trash2, 
   X, Loader2, Star, Check, AlertCircle,
-  Info, Swords, Trophy, ShoppingCart
+  Info, Swords, Trophy, ShoppingCart, Sparkles, RefreshCw
 } from 'lucide-react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
@@ -121,6 +121,63 @@ export default function AdminReviews() {
       });
     }
     setIsModalOpen(true);
+  };
+
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const generateWithAI = async () => {
+    if (!formData.product1_name) {
+      alert('Por favor, informe ao menos o nome do primeiro produto.');
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const prompt = formData.type === 'comparativo' 
+        ? `Crie uma comparação profissional entre ${formData.product1_name} e ${formData.product2_name || 'um concorrente similar'}.`
+        : `Crie uma análise profissional do produto ${formData.product1_name}.`;
+
+      const response = await fetch('https://api.manus.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer Ji4QzrzKDHwKfMPFnR2CMW`
+        },
+        body: JSON.stringify({
+          model: 'manus-1',
+          messages: [
+            {
+              role: 'system',
+              content: 'Você é o Muniz, um especialista em reviews de tecnologia sincero e direto. Seu estilo é focado em custo-benefício e experiência real do usuário.'
+            },
+            {
+              role: 'user',
+              content: `${prompt} Retorne um JSON com: excerpt (resumo 3 linhas), rating (nota 0-10), pros (lista string), cons (lista string), verdict (veredito final).`
+            }
+          ],
+          response_format: { type: 'json_object' }
+        })
+      });
+
+      const data = await response.json();
+      const aiData = JSON.parse(data.choices[0].message.content);
+
+      setFormData(prev => ({
+        ...prev,
+        excerpt: aiData.excerpt,
+        rating: aiData.rating,
+        pros: aiData.pros,
+        cons: aiData.cons,
+        content: aiData.verdict
+      }));
+
+      alert('Análise gerada com sucesso! Revise os campos antes de salvar.');
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao conectar com a IA. Verifique sua chave Manus ou tente novamente.');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -365,6 +422,16 @@ export default function AdminReviews() {
                         placeholder="Ex: Nintendo Switch"
                       />
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={generateWithAI}
+                      disabled={isGenerating}
+                      className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-slate-800 transition-all disabled:opacity-50 border-2 border-slate-700 shadow-xl"
+                    >
+                      {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-yellow-400" />}
+                      {isGenerating ? 'Muniz IA Processando...' : 'Automatizar com Muniz IA'}
+                    </button>
 
                     <ImageUpload 
                       currentImage={formData.image} 
