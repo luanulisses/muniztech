@@ -9,7 +9,7 @@ export interface Review {
   date: string;
   rating: number;
   featured?: boolean;
-  type?: 'review' | 'comparativo';
+  type?: 'review' | 'comparativo' | 'ranking';
   content?: string;
 
   // Novos campos para conversão
@@ -30,6 +30,22 @@ export interface Review {
   product2Price?: string;
   product2Image?: string;
   comparisonSpecs?: { label: string; p1: string; p2: string }[];
+
+  // Campos para Ranking
+  rankingItems?: {
+    name: string;
+    rating: string;
+    price: string;
+    image: string;
+    link: string;
+    benefits: string[];
+  }[];
+  quickRanking?: {
+    best_overall?: string;
+    best_value?: string;
+    best_premium?: string;
+    best_alternative?: string;
+  };
 }
 
 export interface Deal {

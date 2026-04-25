@@ -44,7 +44,9 @@ export function useReviews(limit?: number) {
           product2Link: r.product2_link,
           product2Price: r.product2_price,
           product2Image: r.product2_image,
-          comparisonSpecs: r.comparison_specs
+          comparisonSpecs: r.comparison_specs,
+          rankingItems: r.ranking_items,
+          quickRanking: r.quick_ranking
         }));
         setReviews(mapped);
       }
@@ -98,7 +100,9 @@ export function useReview(slug: string) {
           product2Link: data.product2_link,
           product2Price: data.product2_price,
           product2Image: data.product2_image,
-          comparisonSpecs: data.comparison_specs
+          comparisonSpecs: data.comparison_specs,
+          rankingItems: data.ranking_items,
+          quickRanking: data.quick_ranking
         });
       }
       setLoading(false);

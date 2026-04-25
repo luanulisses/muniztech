@@ -18,7 +18,7 @@ interface ReviewDB {
   image: string;
   excerpt: string;
   content: string;
-  type: 'review' | 'comparativo';
+  type: 'review' | 'comparativo' | 'ranking';
   benefits: string[];
   pros: string[];
   cons: string[];
@@ -27,6 +27,22 @@ interface ReviewDB {
   buy_price: string;
   author: string;
   date: string;
+  
+  // Ranking
+  ranking_items?: {
+    name: string;
+    rating: string;
+    price: string;
+    image: string;
+    link: string;
+    benefits: string[];
+  }[];
+  quick_ranking?: {
+    best_overall?: string;
+    best_value?: string;
+    best_premium?: string;
+    best_alternative?: string;
+  };
 
   // Comparativo
   product1_name?: string;
@@ -68,7 +84,14 @@ export default function AdminReviews() {
     date: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
     product2_pros: [],
     product2_cons: [],
-    comparison_specs: []
+    comparison_specs: [],
+    ranking_items: [],
+    quick_ranking: {
+      best_overall: '',
+      best_value: '',
+      best_premium: '',
+      best_alternative: ''
+    }
   });
 
   const fetchReviews = async () => {
@@ -93,7 +116,14 @@ export default function AdminReviews() {
         ...review,
         product2_pros: review.product2_pros || [],
         product2_cons: review.product2_cons || [],
-        comparison_specs: review.comparison_specs || []
+        comparison_specs: review.comparison_specs || [],
+        ranking_items: review.ranking_items || [],
+        quick_ranking: review.quick_ranking || {
+          best_overall: '',
+          best_value: '',
+          best_premium: '',
+          best_alternative: ''
+        }
       });
     } else {
       setEditingReview(null);
@@ -117,7 +147,14 @@ export default function AdminReviews() {
         date: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
         product2_pros: [],
         product2_cons: [],
-        comparison_specs: []
+        comparison_specs: [],
+        ranking_items: [],
+        quick_ranking: {
+          best_overall: '',
+          best_value: '',
+          best_premium: '',
+          best_alternative: ''
+        }
       });
     }
     setIsModalOpen(true);
@@ -237,6 +274,28 @@ export default function AdminReviews() {
     setFormData({ ...formData, comparison_specs: newSpecs });
   };
 
+  const addRankingItem = () => {
+    setFormData({
+      ...formData,
+      ranking_items: [
+        ...(formData.ranking_items || []),
+        { name: '', rating: '9.0', price: 'R$ 0,00', image: '', link: '', benefits: [] }
+      ]
+    });
+  };
+
+  const updateRankingItem = (index: number, field: string, value: any) => {
+    const newItems = [...(formData.ranking_items || [])];
+    newItems[index] = { ...newItems[index], [field]: value };
+    setFormData({ ...formData, ranking_items: newItems });
+  };
+
+  const removeRankingItem = (index: number) => {
+    const newItems = [...(formData.ranking_items || [])];
+    newItems.splice(index, 1);
+    setFormData({ ...formData, ranking_items: newItems });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -337,6 +396,13 @@ export default function AdminReviews() {
                       className={`px-6 py-2.5 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all ${formData.type === 'comparativo' ? 'bg-secondary text-white shadow-md' : 'text-on-surface-variant'}`}
                     >
                       Comparativo (VS)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, type: 'ranking' })}
+                      className={`px-6 py-2.5 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all ${formData.type === 'ranking' ? 'bg-secondary text-white shadow-md' : 'text-on-surface-variant'}`}
+                    >
+                      🔥 Ranking / Lista
                     </button>
                   </div>
                 </div>
@@ -652,6 +718,184 @@ export default function AdminReviews() {
                   </div>
                 )}
                 </div>
+
+                {/* ── SEÇÃO 3: RANKING / LISTA ── */}
+                {formData.type === 'ranking' && (
+                  <div className="space-y-12">
+                    <div className="bg-white p-8 rounded-[2.5rem] border-2 border-slate-200 space-y-8">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-lg">
+                             <Plus className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h3 className="font-black uppercase tracking-tighter text-2xl">Itens do Ranking</h3>
+                            <p className="text-[10px] font-label-bold text-on-surface-variant uppercase tracking-widest mt-1">Adicione os produtos da sua lista</p>
+                          </div>
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={addRankingItem}
+                          className="px-6 py-3 bg-secondary text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg hover:scale-105 transition-transform"
+                        >
+                          Adicionar Produto
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-6">
+                        {formData.ranking_items?.map((item, index) => (
+                          <div key={index} className="p-6 bg-surface-container-low rounded-[2rem] border border-surface-container-high space-y-6 relative group">
+                            <button 
+                              type="button" 
+                              onClick={() => removeRankingItem(index)}
+                              className="absolute top-4 right-4 p-2 bg-red-50 text-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+
+                            <div className="flex items-center gap-3">
+                               <span className="w-8 h-8 flex items-center justify-center bg-slate-900 text-white rounded-full text-xs font-black">#{index + 1}</span>
+                               <h4 className="font-black uppercase text-xs tracking-widest text-slate-600">Configuração do Produto</h4>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                              <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Nome do Produto</label>
+                                <input 
+                                  type="text" 
+                                  value={item.name} 
+                                  onChange={e => updateRankingItem(index, 'name', e.target.value)}
+                                  className="w-full p-3 bg-white border border-surface-container-high rounded-xl font-black text-sm"
+                                  placeholder="Ex: QCY T13"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Nota</label>
+                                <input 
+                                  type="text" 
+                                  value={item.rating} 
+                                  onChange={e => updateRankingItem(index, 'rating', e.target.value)}
+                                  className="w-full p-3 bg-white border border-surface-container-high rounded-xl font-black text-sm text-secondary"
+                                  placeholder="9.2"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Preço</label>
+                                <input 
+                                  type="text" 
+                                  value={item.price} 
+                                  onChange={e => updateRankingItem(index, 'price', e.target.value)}
+                                  className="w-full p-3 bg-white border border-surface-container-high rounded-xl font-black text-sm"
+                                  placeholder="R$ 120"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Link da Oferta</label>
+                                <input 
+                                  type="url" 
+                                  value={item.link} 
+                                  onChange={e => updateRankingItem(index, 'link', e.target.value)}
+                                  className="w-full p-3 bg-white border border-surface-container-high rounded-xl font-label-bold text-xs"
+                                  placeholder="https://..."
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Imagem do Produto</label>
+                                <input 
+                                  type="text" 
+                                  value={item.image} 
+                                  onChange={e => updateRankingItem(index, 'image', e.target.value)}
+                                  className="w-full p-3 bg-white border border-surface-container-high rounded-xl font-label-bold text-xs"
+                                  placeholder="URL da imagem..."
+                                />
+                              </div>
+                            </div>
+
+                            {/* Benefícios Item */}
+                            <div className="space-y-3">
+                               <label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">2-3 Benefícios Rápidos</label>
+                               <div className="flex gap-2">
+                                  <input 
+                                    id={`benefit-rank-${index}`} 
+                                    className="flex-1 p-2 bg-white rounded-lg border border-slate-200 text-xs font-label-bold" 
+                                    placeholder="Ex: Bateria forte..."
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        const el = e.currentTarget;
+                                        updateRankingItem(index, 'benefits', [...(item.benefits || []), el.value]);
+                                        el.value = '';
+                                      }
+                                    }}
+                                  />
+                               </div>
+                               <div className="flex flex-wrap gap-2">
+                                  {item.benefits?.map((b, bi) => (
+                                    <span key={bi} className="px-2 py-1 bg-green-50 text-green-700 rounded-lg text-[9px] font-black flex items-center gap-1">
+                                      {b} <button type="button" onClick={() => updateRankingItem(index, 'benefits', item.benefits.filter((_, idx) => idx !== bi))}><X className="w-2.5 h-2.5" /></button>
+                                    </span>
+                                  ))}
+                               </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Ranking Rápido */}
+                      <div className="pt-8 border-t border-slate-200 space-y-6">
+                         <div className="flex items-center gap-3">
+                            <Trophy className="w-5 h-5 text-yellow-500" />
+                            <h4 className="font-black uppercase tracking-widest text-xs text-slate-800">Resumo do Ranking (Selo MunizTech)</h4>
+                         </div>
+                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">🏆 Melhor Geral</label>
+                              <input 
+                                type="text" 
+                                value={formData.quick_ranking?.best_overall} 
+                                onChange={e => setFormData({...formData, quick_ranking: {...formData.quick_ranking, best_overall: e.target.value}})}
+                                className="w-full p-3 bg-surface-container-low border border-surface-container-high rounded-xl font-black text-sm"
+                                placeholder="Nome do produto"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">💰 Melhor Custo-B.</label>
+                              <input 
+                                type="text" 
+                                value={formData.quick_ranking?.best_value} 
+                                onChange={e => setFormData({...formData, quick_ranking: {...formData.quick_ranking, best_value: e.target.value}})}
+                                className="w-full p-3 bg-surface-container-low border border-surface-container-high rounded-xl font-black text-sm"
+                                placeholder="Nome do produto"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">💎 Melhor Premium</label>
+                              <input 
+                                type="text" 
+                                value={formData.quick_ranking?.best_premium} 
+                                onChange={e => setFormData({...formData, quick_ranking: {...formData.quick_ranking, best_premium: e.target.value}})}
+                                className="w-full p-3 bg-surface-container-low border border-surface-container-high rounded-xl font-black text-sm"
+                                placeholder="Nome do produto"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">🔄 Melhor Alternativa</label>
+                              <input 
+                                type="text" 
+                                value={formData.quick_ranking?.best_alternative} 
+                                onChange={e => setFormData({...formData, quick_ranking: {...formData.quick_ranking, best_alternative: e.target.value}})}
+                                className="w-full p-3 bg-surface-container-low border border-surface-container-high rounded-xl font-black text-sm"
+                                placeholder="Nome do produto"
+                              />
+                            </div>
+                         </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* ── SEÇÃO 3: TABELA DE SPECS ── */}
