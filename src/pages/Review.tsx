@@ -468,11 +468,10 @@ function ReviewDetail({ slug }: { slug: string }) {
         {/* Conteúdo principal */}
         <article className={`space-y-8 md:space-y-12 ${review.type === 'ranking' ? 'lg:col-span-12' : 'lg:col-span-8'}`}>
           
-          {/* Layout de Ranking */}
-          {review.type === 'ranking' && <RankingView review={review} />}
-
-          {/* Layout de Comparativo */}
-          {review.type === 'comparativo' && (
+          {/* Conteúdo Dinâmico por Tipo */}
+          {review.type === 'ranking' ? (
+            <RankingView review={review} />
+          ) : review.type === 'comparativo' ? (
             <>
               {/* Tabela de Specs */}
               <ComparisonSpecs specs={review.comparisonSpecs} />
