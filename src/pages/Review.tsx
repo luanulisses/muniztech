@@ -460,9 +460,9 @@ function ReviewDetail({ slug }: { slug: string }) {
                 }}
               />
             </div>
-          </div>
-        )
-      )}
+          )
+        )}
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         {/* Conteúdo principal */}
