@@ -472,7 +472,6 @@ export default function AdminReviews() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-                {/* ── SEÇÃO 1: PRODUTO 1 ── */}
                 <div className={`p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border-2 transition-all space-y-6 md:space-y-8 ${formData.type === 'comparativo' ? 'border-secondary/30 bg-secondary/[0.02]' : 'border-surface-container-high bg-white'}`}>
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-secondary text-white rounded-full flex items-center justify-center font-black text-lg shadow-lg">1</div>
@@ -488,28 +487,28 @@ export default function AdminReviews() {
 
                   <div className="space-y-6">
                     {formData.type !== 'ranking' && (
-                      <div className="space-y-2">
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Nome do Produto 1</label>
-                        <input
-                          type="text"
-                          value={formData.product1_name}
-                          onChange={e => setFormData({...formData, product1_name: e.target.value})}
-                          className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black"
-                          placeholder="Ex: Nintendo Switch"
-                        />
-                      </div>
-                    )}
+                      <div className="space-y-6">
+                        <div className="space-y-2">
+                          <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Nome do Produto 1</label>
+                          <input
+                            type="text"
+                            value={formData.product1_name}
+                            onChange={e => setFormData({...formData, product1_name: e.target.value})}
+                            className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black"
+                            placeholder="Ex: Nintendo Switch"
+                          />
+                        </div>
 
-                    {formData.type !== 'ranking' && (
-                      <button
-                        type="button"
-                        onClick={generateWithAI}
-                        disabled={isGenerating}
-                        className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-slate-800 transition-all disabled:opacity-50 border-2 border-slate-700 shadow-xl"
-                      >
-                        {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-yellow-400" />}
-                        {isGenerating ? 'Muniz IA Processando...' : 'Automatizar com Muniz IA'}
-                      </button>
+                        <button
+                          type="button"
+                          onClick={generateWithAI}
+                          disabled={isGenerating}
+                          className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-slate-800 transition-all disabled:opacity-50 border-2 border-slate-700 shadow-xl"
+                        >
+                          {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-yellow-400" />}
+                          {isGenerating ? 'Muniz IA Processando...' : 'Automatizar com Muniz IA'}
+                        </button>
+                      </div>
                     )}
 
                     <ImageUpload 
@@ -519,7 +518,7 @@ export default function AdminReviews() {
                     />
 
                     {formData.type !== 'ranking' && (
-                      <>
+                      <div className="space-y-6">
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Nota (0-10)</label>
@@ -589,14 +588,15 @@ export default function AdminReviews() {
                               }} className="p-3 bg-red-600 text-white rounded-xl"><Plus className="w-4 h-4" /></button>
                             </div>
                             <div className="flex flex-wrap gap-2">
-                            {formData.cons?.map((item, i) => (
-                              <span key={i} className="px-2.5 py-1 bg-red-50 text-red-700 rounded-lg text-[9px] font-black flex items-center gap-1.5">
-                                {item} <button type="button" onClick={() => removeArrayItem('cons', i)}><X className="w-3 h-3" /></button>
-                              </span>
-                            ))}
+                              {formData.cons?.map((item, i) => (
+                                <span key={i} className="px-2.5 py-1 bg-red-50 text-red-700 rounded-lg text-[9px] font-black flex items-center gap-1.5">
+                                  {item} <button type="button" onClick={() => removeArrayItem('cons', i)}><X className="w-3 h-3" /></button>
+                                </span>
+                              ))}
+                            </div>
                           </div>
                         </div>
-                      </>
+                      </div>
                     )}
                   </div>
                 </div>
