@@ -21,48 +21,52 @@ Deno.serve(async (req) => {
     if (table === "deals") {
       imageUrl = record.image;
       buttonUrl = `https://www.muniztech.com.br/ofertas/${record.slug || record.id}`;
-      buttonText = "💰 Ver Melhor Preço";
-      message = `🔥 *${record.title}*\n\n` +
-                `📊 *Oportunidade Monitorada*\n` +
-                `💰 *Preço Atual:* ${record.price}\n` +
-                `📉 *Desconto:* ${record.discount}\n` +
-                `🛒 *Loja:* ${record.store || 'Amazon'}\n\n` +
+      buttonText = "💰 VER MELHOR PREÇO";
+      message = `💰 <b>OFERTA: ${record.title}</b>\n\n` +
+                `🔥 <b>Por apenas: ${record.price}</b>\n` +
+                `📉 <b>Desconto: ${record.discount}</b>\n` +
+                `🛒 <b>Loja: ${record.store || 'Amazon'}</b>\n\n` +
                 `⚡ Ofertas atualizadas TODOS os dias\n` +
                 `💰 Links confiáveis e com desconto real\n\n` +
-                `👉 *Acesse pelo link:* ${buttonUrl}\n\n` +
-                `#oferta #tecnologia #muniztech #${record.category?.toLowerCase() || 'desconto'}`;
+                `👉 <b>Aproveite agora:</b>\n` +
+                `👉 ${buttonUrl}\n\n` +
+                `#oferta #muniztech #tecnologia #${record.category?.toLowerCase().replace(/\s+/g, '') || 'desconto'}`;
     } else if (table === "reviews") {
       imageUrl = record.image;
       buttonUrl = `https://www.muniztech.com.br/analises/${record.slug || record.id}`;
+      buttonText = "💰 VER MELHOR PREÇO";
       
       if (record.type === 'ranking') {
-        buttonText = "🏆 Ver Ranking Completo";
         const items = Array.isArray(record.ranking_items) ? record.ranking_items : [];
         const medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
-        const listText = items.slice(0, 5).map((item: any, i: number) => `${medals[i] || "🔹"} *${item.name}* - ⭐ ${item.rating}`).join('\n');
+        const listText = items.slice(0, 5).map((item: any, i: number) => 
+          `${medals[i] || "🔹"} <b>${item.name}</b>\n` +
+          `⭐ ${item.rating}\n` +
+          `💰 ${item.price}\n` +
+          (Array.isArray(item.benefits) ? item.benefits.slice(0, 2).map((b: string) => `✔ ${b}`).join('\n') : '')
+        ).join('\n\n');
 
-        message = `🏆 *${record.title}*\n\n` +
-                  `📊 *OS MELHORES DO MOMENTO:*\n` +
+        message = `🏆 <b>${record.title}</b>\n\n` +
+                  `📊 <b>OS MELHORES DO MOMENTO:</b>\n\n` +
                   `${listText}\n\n` +
-                  `✨ *Destaques do Muniz:* \n` +
+                  `✨ <b>Ranking Rápido:</b> \n` +
                   (record.quick_ranking?.best_overall ? `🥇 Melhor Geral: ${record.quick_ranking.best_overall}\n` : '') +
                   (record.quick_ranking?.best_value ? `💰 Custo-Benefício: ${record.quick_ranking.best_value}\n` : '') +
-                  `\n🔥 *Veja a lista completa com prós, contras e preços:* \n` +
+                  `\n🔥 <b>Veja a lista completa com prós, contras e preços:</b> \n` +
                   `👉 ${buttonUrl}\n\n` +
                   `⚡ Ofertas atualizadas TODOS os dias\n` +
                   `💰 Links confiáveis e com desconto real\n\n` +
                   `#Ranking #Top5 #MunizTech #MelhoresProdutos #${record.category?.replace(/\s+/g, '')}`;
       } else {
-        buttonText = "📊 Ver Comparativo Completo";
         const p1Pros = Array.isArray(record.pros) ? record.pros.slice(0, 3).map(p => `✔ ${p}`).join('\n') : '';
         const p2Pros = Array.isArray(record.product2_pros) ? record.product2_pros.slice(0, 3).map(p => `✔ ${p}`).join('\n') : '';
 
-        message = `🚀 *${record.title}*\n\n` +
+        message = `🚀 <b>${record.title}</b>\n\n` +
                   `📊 ${record.excerpt}\n\n` +
-                  `🍎 *${record.product1_name || 'Produto 1'}*\n${p1Pros}\n\n` +
-                  (record.product2_name ? `🤖 *${record.product2_name}*\n${p2Pros}\n\n` : '') +
-                  `⚖️ *Resumo direto:*\n👉 ${record.rating}/10 - ${record.for_whom || 'Vale a pena conferir!'}\n\n` +
-                  `🔥 *Veja o comparativo completo e escolha o melhor:* \n` +
+                  `🍎 <b>${record.product1_name || 'Produto 1'}</b>\n${p1Pros}\n\n` +
+                  (record.product2_name ? `🤖 <b>${record.product2_name}</b>\n${p2Pros}\n\n` : '') +
+                  `⚖️ <b>Resumo direto:</b>\n👉 ${record.for_whom || 'Vale a pena conferir!'}\n\n` +
+                  `🔥 <b>Veja o comparativo completo e escolha o melhor antes de comprar:</b>\n` +
                   `👉 ${buttonUrl}\n\n` +
                   `⚡ Ofertas atualizadas TODOS os dias\n` +
                   `💰 Links confiáveis e com desconto real\n\n` +
@@ -71,24 +75,32 @@ Deno.serve(async (req) => {
     }
 
     if (message) {
-      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
+      // Tenta enviar com foto se houver URL, caso contrário envia apenas texto
+      const method = imageUrl ? "sendPhoto" : "sendMessage";
+      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/${method}`;
+      
+      const payload: any = {
+        chat_id: TELEGRAM_CHAT_ID,
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard: [[{ text: buttonText, url: buttonUrl }]]
+        }
+      };
+
+      if (imageUrl) {
+        payload.photo = imageUrl;
+        payload.caption = message;
+      } else {
+        payload.text = message;
+      }
+
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          photo: imageUrl,
-          caption: message,
-          parse_mode: "Markdown",
-          reply_markup: {
-            inline_keyboard: [
-              [{ text: buttonText, url: buttonUrl }]
-            ]
-          }
-        }),
+        body: JSON.stringify(payload),
       });
 
-      const result = await response.json();
+    const result = await response.json();
       return new Response(JSON.stringify(result), { status: response.status });
     }
 
