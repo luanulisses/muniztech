@@ -152,7 +152,13 @@ export default function AdminReviews() {
             },
             {
               role: 'user',
-              content: `${prompt} Retorne um JSON com: excerpt (resumo 3 linhas), rating (nota 0-10), pros (lista string), cons (lista string), verdict (veredito final).`
+              content: `${prompt} Retorne um JSON com: 
+              excerpt (resumo de 2 linhas sobre a disputa), 
+              rating (nota 0-10 do vencedor), 
+              pros (lista com exatamente os 3 pontos mais fortes do produto 1), 
+              product2_pros (lista com exatamente os 3 pontos mais fortes do produto 2), 
+              for_whom (uma frase curta de recomendação),
+              verdict (veredito final em texto).`
             }
           ],
           response_format: { type: 'json_object' }
@@ -167,7 +173,8 @@ export default function AdminReviews() {
         excerpt: aiData.excerpt,
         rating: aiData.rating,
         pros: aiData.pros,
-        cons: aiData.cons,
+        product2_pros: aiData.product2_pros,
+        for_whom: aiData.for_whom,
         content: aiData.verdict
       }));
 
@@ -436,7 +443,7 @@ export default function AdminReviews() {
                     <ImageUpload 
                       currentImage={formData.image} 
                       onUpload={(url) => setFormData({...formData, image: url})} 
-                      label="Capa / Imagem do Produto"
+                      label="Capa do Produto (Para comparativos, use imagem Lado a Lado)"
                     />
 
                     <div className="grid grid-cols-2 gap-4">

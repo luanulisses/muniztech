@@ -21,19 +21,34 @@ Deno.serve(async (req) => {
     if (table === "deals") {
       imageUrl = record.image;
       buttonUrl = `https://www.muniztech.com.br/ofertas/${record.slug || record.id}`;
-      message = `🔥 *OFERTA MONITORADA: ${record.title}*\n\n` +
-                `💰 *Preço:* ${record.price}\n` +
+      buttonText = "💰 Ver Melhor Preço";
+      message = `🔥 *${record.title}*\n\n` +
+                `📊 *Oportunidade Monitorada*\n` +
+                `💰 *Preço Atual:* ${record.price}\n` +
                 `📉 *Desconto:* ${record.discount}\n` +
                 `🛒 *Loja:* ${record.store || 'Amazon'}\n\n` +
-                `🔗 *Link:* ${buttonUrl}\n\n` +
-                `✅ *MunizTech: O menor preço real.*`;
+                `⚡ Ofertas atualizadas TODOS os dias\n` +
+                `💰 Links confiáveis e com desconto real\n\n` +
+                `👉 *Acesse pelo link:* ${buttonUrl}\n\n` +
+                `#oferta #tecnologia #muniztech #${record.category?.toLowerCase() || 'desconto'}`;
     } else if (table === "reviews") {
       imageUrl = record.image;
       buttonUrl = `https://www.muniztech.com.br/analises/${record.slug || record.id}`;
-      message = `📝 *ANÁLISE NOVA: ${record.title}*\n\n` +
-                `⭐ *Nota Muniz:* ${record.rating}/10\n` +
-                `🧐 *Resumo:* ${record.excerpt}\n\n` +
-                `🔗 *Leia a análise completa:* ${buttonUrl}`;
+      buttonText = "📊 Ver Comparativo Completo";
+      
+      const p1Pros = Array.isArray(record.pros) ? record.pros.slice(0, 3).map(p => `✔ ${p}`).join('\n') : '';
+      const p2Pros = Array.isArray(record.product2_pros) ? record.product2_pros.slice(0, 3).map(p => `✔ ${p}`).join('\n') : '';
+
+      message = `🚀 *${record.title}*\n\n` +
+                `📊 ${record.excerpt}\n\n` +
+                `🍎 *${record.product1_name || 'Produto 1'}*\n${p1Pros}\n\n` +
+                (record.product2_name ? `🤖 *${record.product2_name}*\n${p2Pros}\n\n` : '') +
+                `⚖️ *Resumo direto:*\n👉 ${record.rating}/10 - ${record.for_whom || 'Vale a pena conferir!'}\n\n` +
+                `🔥 *Veja o comparativo completo e escolha o melhor:* \n` +
+                `👉 ${buttonUrl}\n\n` +
+                `⚡ Ofertas atualizadas TODOS os dias\n` +
+                `💰 Links confiáveis e com desconto real\n\n` +
+                `#${record.product1_name?.replace(/\s+/g, '')} #${record.product2_name?.replace(/\s+/g, '') || 'Review'} #MunizTech #Comparativo`;
     }
 
     if (message) {
