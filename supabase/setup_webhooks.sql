@@ -19,6 +19,6 @@
 -- Edge Function: telegram-notifier
 -- Method: POST
 
--- Segredos do Supabase (Execute via Settings -> API -> Secrets ou via CLI):
+-- Segredos do Supabase (Configure em Settings -> API -> Secrets):
 -- TELEGRAM_BOT_TOKEN = 8373249351:AAHmoc3eciKfBxl7OUfGUERJlaDb8wJmTz0
--- TELEGRAM_CHAT_ID = [O ID que vamos descobrir]
+-- TELEGRAM_CHAT_ID = @muniztechofertas
