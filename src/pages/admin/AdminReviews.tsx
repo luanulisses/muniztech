@@ -478,123 +478,132 @@ export default function AdminReviews() {
                     <div className="w-12 h-12 bg-secondary text-white rounded-full flex items-center justify-center font-black text-lg shadow-lg">1</div>
                     <div>
                       <h3 className="font-black uppercase tracking-tighter text-2xl">
-                        {formData.type === 'comparativo' ? 'Primeiro Produto' : 'Informações do Produto'}
+                        {formData.type === 'ranking' ? 'Capa do Ranking' : formData.type === 'comparativo' ? 'Primeiro Produto' : 'Informações do Produto'}
                       </h3>
-                      <p className="text-[10px] font-label-bold text-on-surface-variant uppercase tracking-widest mt-1">Dados principais da análise</p>
+                      <p className="text-[10px] font-label-bold text-on-surface-variant uppercase tracking-widest mt-1">
+                        {formData.type === 'ranking' ? 'Imagem principal que aparece no topo da lista' : 'Dados principais da análise'}
+                      </p>
                     </div>
                   </div>
 
                   <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Nome do Produto 1</label>
-                      <input
-                        type="text"
-                        value={formData.product1_name}
-                        onChange={e => setFormData({...formData, product1_name: e.target.value})}
-                        className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black"
-                        placeholder="Ex: Nintendo Switch"
-                      />
-                    </div>
+                    {formData.type !== 'ranking' && (
+                      <div className="space-y-2">
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Nome do Produto 1</label>
+                        <input
+                          type="text"
+                          value={formData.product1_name}
+                          onChange={e => setFormData({...formData, product1_name: e.target.value})}
+                          className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black"
+                          placeholder="Ex: Nintendo Switch"
+                        />
+                      </div>
+                    )}
 
-                    <button
-                      type="button"
-                      onClick={generateWithAI}
-                      disabled={isGenerating}
-                      className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-slate-800 transition-all disabled:opacity-50 border-2 border-slate-700 shadow-xl"
-                    >
-                      {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-yellow-400" />}
-                      {isGenerating ? 'Muniz IA Processando...' : 'Automatizar com Muniz IA'}
-                    </button>
+                    {formData.type !== 'ranking' && (
+                      <button
+                        type="button"
+                        onClick={generateWithAI}
+                        disabled={isGenerating}
+                        className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-slate-800 transition-all disabled:opacity-50 border-2 border-slate-700 shadow-xl"
+                      >
+                        {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-yellow-400" />}
+                        {isGenerating ? 'Muniz IA Processando...' : 'Automatizar com Muniz IA'}
+                      </button>
+                    )}
 
                     <ImageUpload 
                       currentImage={formData.image} 
                       onUpload={(url) => setFormData({...formData, image: url})} 
-                      label="Capa do Produto (Para comparativos, use imagem Lado a Lado)"
+                      label={formData.type === 'ranking' ? "Imagem de Destaque do Ranking" : "Capa do Produto (Para comparativos, use imagem Lado a Lado)"}
                     />
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Nota (0-10)</label>
-                        <input
-                          type="text"
-                          value={formData.rating}
-                          onChange={e => setFormData({...formData, rating: e.target.value})}
-                          className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black text-secondary"
-                          placeholder="9.5"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Preço de Ref.</label>
-                        <input
-                          type="text"
-                          value={formData.buy_price}
-                          onChange={e => {
-                            let val = e.target.value.replace(/[^\d]/g, '');
-                            if (val) {
-                              const floatVal = parseFloat(val) / 100;
-                              val = floatVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                            }
-                            setFormData({...formData, buy_price: val});
-                          }}
-                          className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black"
-                          placeholder="R$ 0,00"
-                        />
-                      </div>
-                    </div>
+                    {formData.type !== 'ranking' && (
+                      <>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Nota (0-10)</label>
+                            <input
+                              type="text"
+                              value={formData.rating}
+                              onChange={e => setFormData({...formData, rating: e.target.value})}
+                              className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black text-secondary"
+                              placeholder="9.5"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Preço de Ref.</label>
+                            <input
+                              type="text"
+                              value={formData.buy_price}
+                              onChange={e => {
+                                let val = e.target.value.replace(/[^\d]/g, '');
+                                if (val) {
+                                  const floatVal = parseFloat(val) / 100;
+                                  val = floatVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                }
+                                setFormData({...formData, buy_price: val});
+                              }}
+                              className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-black"
+                              placeholder="R$ 0,00"
+                            />
+                          </div>
+                        </div>
 
-                    <div className="space-y-2">
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Link de Compra</label>
-                      <input
-                        type="url"
-                        value={formData.buy_link}
-                        onChange={e => setFormData({...formData, buy_link: e.target.value})}
-                        className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-label-bold text-xs"
-                        placeholder="https://..."
-                      />
-                    </div>
+                        <div className="space-y-2">
+                          <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Link de Compra</label>
+                          <input
+                            type="url"
+                            value={formData.buy_link}
+                            onChange={e => setFormData({...formData, buy_link: e.target.value})}
+                            className="w-full p-4 bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-secondary transition-all font-label-bold text-xs"
+                            placeholder="https://..."
+                          />
+                        </div>
 
-                    {/* Prós e Contras P1 */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-blue-600">Pontos Positivos</label>
-                        <div className="flex gap-2">
-                          <input id="p1-pro-input" type="text" className="flex-1 p-3 bg-surface-container-low rounded-xl text-xs font-label-bold" placeholder="Add..." />
-                          <button type="button" onClick={() => {
-                            const el = document.getElementById('p1-pro-input') as HTMLInputElement;
-                            handleArrayInput('pros', el.value); el.value = '';
-                          }} className="p-3 bg-blue-600 text-white rounded-xl"><Plus className="w-4 h-4" /></button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-blue-600">Pontos Positivos</label>
+                            <div className="flex gap-2">
+                              <input id="p1-pro-input" type="text" className="flex-1 p-3 bg-surface-container-low rounded-xl text-xs font-label-bold" placeholder="Add..." />
+                              <button type="button" onClick={() => {
+                                const el = document.getElementById('p1-pro-input') as HTMLInputElement;
+                                handleArrayInput('pros', el.value); el.value = '';
+                              }} className="p-3 bg-blue-600 text-white rounded-xl"><Plus className="w-4 h-4" /></button>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {formData.pros?.map((item, i) => (
+                                <span key={i} className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-[9px] font-black flex items-center gap-1.5">
+                                  {item} <button type="button" onClick={() => removeArrayItem('pros', i)}><X className="w-3 h-3" /></button>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="space-y-4">
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-red-600">Pontos Negativos</label>
+                            <div className="flex gap-2">
+                              <input id="p1-con-input" type="text" className="flex-1 p-3 bg-surface-container-low rounded-xl text-xs font-label-bold" placeholder="Add..." />
+                              <button type="button" onClick={() => {
+                                const el = document.getElementById('p1-con-input') as HTMLInputElement;
+                                handleArrayInput('cons', el.value); el.value = '';
+                              }} className="p-3 bg-red-600 text-white rounded-xl"><Plus className="w-4 h-4" /></button>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                            {formData.cons?.map((item, i) => (
+                              <span key={i} className="px-2.5 py-1 bg-red-50 text-red-700 rounded-lg text-[9px] font-black flex items-center gap-1.5">
+                                {item} <button type="button" onClick={() => removeArrayItem('cons', i)}><X className="w-3 h-3" /></button>
+                              </span>
+                            ))}
+                          </div>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                          {formData.pros?.map((item, i) => (
-                            <span key={i} className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-[9px] font-black flex items-center gap-1.5">
-                              {item} <button type="button" onClick={() => removeArrayItem('pros', i)}><X className="w-3 h-3" /></button>
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="space-y-4">
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-red-600">Pontos Negativos</label>
-                        <div className="flex gap-2">
-                          <input id="p1-con-input" type="text" className="flex-1 p-3 bg-surface-container-low rounded-xl text-xs font-label-bold" placeholder="Add..." />
-                          <button type="button" onClick={() => {
-                            const el = document.getElementById('p1-con-input') as HTMLInputElement;
-                            handleArrayInput('cons', el.value); el.value = '';
-                          }} className="p-3 bg-red-600 text-white rounded-xl"><Plus className="w-4 h-4" /></button>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {formData.cons?.map((item, i) => (
-                            <span key={i} className="px-2.5 py-1 bg-red-50 text-red-700 rounded-lg text-[9px] font-black flex items-center gap-1.5">
-                              {item} <button type="button" onClick={() => removeArrayItem('cons', i)}><X className="w-3 h-3" /></button>
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
                 {/* ── SEÇÃO 2: PRODUTO 2 ── */}
-                <div className="space-y-12">
+                {formData.type !== 'ranking' && (
+                  <div className="space-y-12">
                 {formData.type === 'comparativo' ? (
                   <div className="p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border-2 border-blue-200 bg-blue-50/[0.15] space-y-6 md:space-y-8 h-full">
                     <div className="flex items-center gap-4">
@@ -718,6 +727,7 @@ export default function AdminReviews() {
                   </div>
                 )}
                 </div>
+              )}
 
                 {/* ── SEÇÃO 3: RANKING / LISTA ── */}
                 {formData.type === 'ranking' && (
