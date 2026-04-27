@@ -227,7 +227,7 @@ export default function OfferLanding() {
                 className="w-full py-6 bg-secondary text-white rounded-2xl font-black uppercase tracking-widest text-xl flex items-center justify-center gap-3 transition-transform hover:scale-105 active:scale-95 shadow-[0_10px_40px_rgb(22,163,74,0.4)] relative overflow-hidden group"
               >
                 <ShoppingCart className="w-6 h-6" />
-                Comprar com Desconto
+                VER MELHOR PREÇO
               </a>
 
               <div className="grid grid-cols-2 gap-4 pt-4">

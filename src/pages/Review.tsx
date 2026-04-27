@@ -653,7 +653,7 @@ function ReviewDetail({ slug }: { slug: string }) {
                   <h4 className="text-white font-black uppercase tracking-widest text-xs relative z-10">{review.title.split(' vs ')[0] || 'Produto 1'}</h4>
                   <div className="text-2xl font-black text-secondary relative z-10">{review.buyPrice}</div>
                   <a href={review.buyLink} target="_blank" rel="noopener noreferrer" className="inline-flex w-full py-4 bg-secondary text-white rounded-xl font-black uppercase tracking-widest text-[10px] items-center justify-center gap-2 shadow-xl hover:scale-105 transition-transform relative z-10">
-                    Comprar {review.title.split(' vs ')[0]} <ShoppingCart className="w-4 h-4" />
+                    VER MELHOR PREÇO <ShoppingCart className="w-4 h-4" />
                   </a>
                 </div>
                 <div className="bg-slate-900 rounded-[32px] p-8 text-center space-y-4 relative overflow-hidden group">
@@ -661,7 +661,7 @@ function ReviewDetail({ slug }: { slug: string }) {
                   <h4 className="text-white font-black uppercase tracking-widest text-xs relative z-10">{review.product2Name || review.title.split(' vs ')[1] || 'Produto 2'}</h4>
                   <div className="text-2xl font-black text-secondary relative z-10">{review.product2Price}</div>
                   <a href={review.product2Link} target="_blank" rel="noopener noreferrer" className="inline-flex w-full py-4 bg-white text-slate-900 rounded-xl font-black uppercase tracking-widest text-[10px] items-center justify-center gap-2 shadow-xl hover:scale-105 transition-transform relative z-10">
-                    Comprar {review.product2Name || 'P2'} <ShoppingCart className="w-4 h-4" />
+                    VER MELHOR PREÇO <ShoppingCart className="w-4 h-4" />
                   </a>
                 </div>
              </div>
@@ -675,13 +675,13 @@ function ReviewDetail({ slug }: { slug: string }) {
               <p className="text-gray-400 font-label-bold text-sm md:text-lg max-w-xl mx-auto relative z-10">
                 Garanta o seu agora pelo menor preço verificado pelo nosso time.
               </p>
-              <a
+                <a
                 href={review.buyLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex px-8 md:px-12 py-4 md:py-5 bg-secondary text-white rounded-2xl font-black uppercase tracking-widest text-sm md:text-lg items-center justify-center gap-3 transition-transform hover:scale-105 active:scale-95 shadow-[0_10px_40px_rgb(22,163,74,0.4)] relative z-10"
               >
-                Comprar Agora <ArrowRight className="w-5 h-5" />
+                VER MELHOR PREÇO <ArrowRight className="w-5 h-5" />
               </a>
             </div>
           )}
@@ -769,7 +769,7 @@ function ReviewDetail({ slug }: { slug: string }) {
                   rel="noopener noreferrer"
                   className="w-full py-3.5 md:py-4 bg-secondary text-white rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all hover:bg-secondary-fixed-variant shadow-lg shadow-secondary/20 text-sm"
                 >
-                  <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" /> Ir para a Loja
+                  <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" /> VER MELHOR PREÇO
                 </a>
               )}
             </div>

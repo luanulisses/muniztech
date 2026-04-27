@@ -50,6 +50,7 @@ export default function AdminLayout() {
 
   const navItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+    { name: 'Pendentes 🔥', path: '/admin/pendentes', icon: ShoppingCart },
     { name: 'Ofertas', path: '/admin/ofertas', icon: ShoppingCart },
     { name: 'Avaliações', path: '/admin/avaliacoes', icon: Star },
     { name: 'Categorias', path: '/admin/categorias', icon: Tag },

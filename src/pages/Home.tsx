@@ -97,7 +97,7 @@ export default function Home() {
                       className="w-full sm:w-auto px-8 py-4 bg-secondary text-white rounded-2xl font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-secondary/20"
                     >
                       <ShoppingCart className="w-5 h-5" />
-                      Comprar Agora
+                      VER MELHOR PREÇO
                     </a>
                     <Link
                       to={`/analises/${mainHeroProduct.slug}`}
@@ -215,7 +215,7 @@ export default function Home() {
                   rel="noopener noreferrer"
                   className="w-full mt-2 md:mt-4 py-2 md:py-3 bg-secondary text-white rounded-lg md:rounded-xl font-black uppercase text-[8px] md:text-xs tracking-widest flex items-center justify-center transition-transform hover:bg-secondary-fixed-variant active:scale-95 shadow-md shadow-secondary/20"
                 >
-                  Comprar
+                  VER MELHOR PREÇO
                 </a>
               </div>
             </div>

@@ -26,6 +26,7 @@ const Privacidade = React.lazy(() => import('@/pages/Privacidade'));
 const AdminLogin = React.lazy(() => import('@/pages/admin/Login'));
 const AdminLayout = React.lazy(() => import('@/pages/admin/AdminLayout'));
 const AdminDashboard = React.lazy(() => import('@/pages/admin/AdminDashboard'));
+const AdminPendingDeals = React.lazy(() => import('@/pages/admin/AdminPendingDeals'));
 const AdminDeals = React.lazy(() => import('@/pages/admin/AdminDeals'));
 const AdminReviews = React.lazy(() => import('@/pages/admin/AdminReviews'));
 const AdminCategories = React.lazy(() => import('@/pages/admin/AdminCategories'));
@@ -89,6 +90,7 @@ function AppContent() {
               {/* Protected Admin Routes */}
               <Route path="/admin" element={<AdminLayout />}>
                 <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="pendentes" element={<AdminPendingDeals />} />
                 <Route path="ofertas" element={<AdminDeals />} />
                 <Route path="avaliacoes" element={<AdminReviews />} />
                 <Route path="categorias" element={<AdminCategories />} />

@@ -21,15 +21,15 @@ Deno.serve(async (req) => {
     if (table === "deals") {
       imageUrl = record.image;
       buttonUrl = `https://www.muniztech.com.br/ofertas/${record.slug || record.id}`;
-      buttonText = "💰 VER MELHOR PREÇO";
-      message = `💰 <b>OFERTA: ${record.title}</b>\n\n` +
-                `🔥 <b>Por apenas: ${record.price}</b>\n` +
+      buttonText = "🔥 VER OFERTA AGORA";
+      message = `🔥 <b>OFERTA RELÂMPAGO</b>\n\n` +
+                `🎧 <b>${record.title}</b>\n\n` +
+                `💰 <b>Por apenas: ${record.price}</b>\n` +
                 `📉 <b>Desconto: ${record.discount}</b>\n` +
-                `🛒 <b>Loja: ${record.store || 'Amazon'}</b>\n\n` +
-                `⚡ Ofertas atualizadas TODOS os dias\n` +
-                `💰 Links confiáveis e com desconto real\n\n` +
+                `🏪 <b>Loja: ${record.store || 'Amazon'}</b>\n\n` +
+                `⚡ Preço pode mudar a qualquer momento\n\n` +
                 `👉 <b>Aproveite agora:</b>\n` +
-                `👉 ${buttonUrl}\n\n` +
+                `${buttonUrl}\n\n` +
                 `#oferta #muniztech #tecnologia #${record.category?.toLowerCase().replace(/\s+/g, '') || 'desconto'}`;
     } else if (table === "reviews") {
       imageUrl = record.image;
