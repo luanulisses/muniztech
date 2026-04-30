@@ -14,7 +14,11 @@ const NICHE_KEYWORDS = [
   "placa", "gpu", "ram", "ssd", "hd", "roteador", "wi-fi", "smart", "alexa", "echo", "tablet", 
   "ipad", "kindle", "watch", "iphone", "galaxy", "moto", "xiaomi", "redmi", "poco", "razer", 
   "logitech", "corsair", "hyperx", "asus", "acer", "dell", "lenovo", "hp", "samsung", "lg", 
-  "tcl", "msi", "gigabyte", "rtx", "gtx", "ryzen", "intel", "core i", "gaming"
+  "tcl", "msi", "gigabyte", "rtx", "gtx", "ryzen", "intel", "core i", "gaming", "tecnologia",
+  "eletrônico", "informática", "cabo", "usb", "hdmi", "carregador", "bateria", "caixa de som",
+  "bluetooth", "tv", "televisão", "câmera", "webcam", "microfone", "impressora", "scanner",
+  "projetor", "apple", "macbook", "airpods", "beats", "jbl", "sony", "canon", "nikon", "drone",
+  "gopro", "kindle", "fire stick", "roku", "chromecast"
 ];
 
 const FORBIDDEN_KEYWORDS = [
@@ -63,14 +67,16 @@ serve(async () => {
 
     // LISTA DE TERMOS DE BUSCA (Foco total em Tecnologia e Gamer)
     const searchTerms = [
-      "monitor gamer", 
-      "notebook gamer", 
-      "smartphone 5g", 
-      "placa de vídeo", 
-      "periféricos pc",
-      "console video game",
-      "smartwatch promoção",
-      "hardware pc"
+      "eletrônicos", 
+      "gamer", 
+      "smartphone", 
+      "notebook", 
+      "monitor",
+      "periféricos",
+      "hardware",
+      "console",
+      "smartwatch",
+      "tecnologia"
     ];
     let totalSaved = 0;
     const allToInsert: any[] = [];
