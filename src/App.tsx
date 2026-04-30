@@ -17,6 +17,7 @@ const About = React.lazy(() => import('@/pages/About'));
 const Contact = React.lazy(() => import('@/pages/Contact'));
 const Listicle = React.lazy(() => import('@/pages/Listicle'));
 const Search = React.lazy(() => import('@/pages/Search'));
+const Achadinhos = React.lazy(() => import('@/pages/Achadinhos'));
 const TrabalheConosco = React.lazy(() => import('@/pages/TrabalheConosco'));
 const PoliticaEditorial = React.lazy(() => import('@/pages/PoliticaEditorial'));
 const TermosDeUso = React.lazy(() => import('@/pages/TermosDeUso'));
@@ -82,6 +83,7 @@ function AppContent() {
               <Route path="/politica-editorial" element={<PageWrapper><PoliticaEditorial /></PageWrapper>} />
               <Route path="/termos-de-uso" element={<PageWrapper><TermosDeUso /></PageWrapper>} />
               <Route path="/privacidade" element={<PageWrapper><Privacidade /></PageWrapper>} />
+              <Route path="/achadinhos" element={<PageWrapper><Achadinhos /></PageWrapper>} />
               <Route path="/artigo/5-gadgets-baratos" element={<PageWrapper><Listicle /></PageWrapper>} />
 
               {/* Admin Login (No Layout) */}

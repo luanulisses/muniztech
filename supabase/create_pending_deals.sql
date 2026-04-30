@@ -8,6 +8,7 @@ CREATE TABLE pending_deals (
   discount TEXT,
   store TEXT NOT NULL,
   source_url TEXT NOT NULL,
+  affiliate_link TEXT,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );

@@ -223,41 +223,58 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. ACHADINHOS */}
+      {/* 4. ACHADINHOS (TOP 5) */}
       {achadinhos.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 md:px-8 w-full space-y-6 mt-4">
-          <div className="flex items-center gap-3">
-            <Tag className="w-6 h-6 md:w-8 md:h-8 text-secondary" />
-            <h2 className="text-2xl md:text-3xl font-black text-on-surface uppercase tracking-tight">
-              Achadinhos
-            </h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Tag className="w-6 h-6 md:w-8 md:h-8 text-secondary" />
+              <h2 className="text-2xl md:text-3xl font-black text-on-surface uppercase tracking-tight">
+                Top 5 Achadinhos
+              </h2>
+            </div>
+            <Link 
+              to="/achadinhos" 
+              className="flex items-center gap-2 text-secondary font-black uppercase text-[10px] md:text-xs tracking-widest hover:translate-x-1 transition-transform group"
+            >
+              Ver Todos os Achadinhos
+              <Icons.ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {achadinhos.map((deal) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
+            {achadinhos.slice(0, 5).map((deal, index) => (
               <a
                 key={deal.id}
                 href={deal.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white border border-surface-container-high rounded-2xl md:rounded-3xl p-3 md:p-4 flex gap-4 items-center group hover:shadow-xl transition-all"
+                className="bg-white border border-surface-container-high rounded-3xl p-4 flex flex-col gap-4 group hover:shadow-xl transition-all relative overflow-hidden"
               >
-                <div className="w-16 h-16 md:w-24 md:h-24 shrink-0 bg-surface-container-lowest rounded-xl md:rounded-2xl flex items-center justify-center p-2">
+                <div className="absolute top-2 left-2 z-10 w-6 h-6 bg-secondary text-white rounded-full flex items-center justify-center font-black text-[10px] shadow-lg">
+                  {index + 1}
+                </div>
+                <div className="w-full aspect-square bg-surface-container-lowest rounded-2xl flex items-center justify-center p-4 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <img
                     src={deal.image}
-                    className="max-h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform"
+                    className="max-h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
                     alt={deal.title}
                   />
                 </div>
-                <div className="space-y-1">
-                  <h3 className="font-black text-xs md:text-sm text-on-surface line-clamp-2 leading-tight group-hover:text-secondary transition-colors">
+                <div className="space-y-2 flex-grow flex flex-col">
+                  <h3 className="font-black text-[11px] md:text-xs text-on-surface line-clamp-2 leading-tight group-hover:text-secondary transition-colors">
                     {deal.title}
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <span className="text-base md:text-xl font-black text-secondary">{deal.price}</span>
-                    <span className="text-[10px] text-on-surface-variant line-through">
-                      {deal.originalPrice}
-                    </span>
+                  <div className="mt-auto pt-2">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-lg md:text-xl font-black text-secondary">{deal.price}</span>
+                    </div>
+                    {deal.discount && (
+                      <span className="text-[9px] font-black text-red-500 uppercase tracking-widest bg-red-50 px-1.5 py-0.5 rounded-md">
+                        {deal.discount} OFF
+                      </span>
+                    )}
                   </div>
                 </div>
               </a>

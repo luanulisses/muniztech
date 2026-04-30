@@ -27,6 +27,7 @@ export default function Header() {
     { to: '/', label: 'Início', icon: Home },
     { to: '/analises', label: 'Avaliações', icon: MessageSquareText },
     { to: '/ofertas', label: 'Ofertas', icon: Tag },
+    { to: '/achadinhos', label: 'Achadinhos', icon: Tag },
     { to: '/sobre', label: 'Sobre Nós', icon: Info },
     { to: '/contato', label: 'Contato', icon: Phone },
   ];
@@ -121,7 +122,7 @@ export default function Header() {
 
           {/* Center: Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8 font-black uppercase text-xs tracking-widest">
-            {navLinks.slice(0, 3).map((link) => {
+            {navLinks.slice(0, 4).map((link) => {
               const isActive = location.pathname === link.to || (link.to !== '/' && location.pathname.startsWith(link.to));
               return (
                 <Link

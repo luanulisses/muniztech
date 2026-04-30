@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Deal } from '@/types';
 
-export function useDeals(category?: string, limit?: number) {
+export function useDeals(category?: string, limit?: number, isAchadinho?: boolean) {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -13,6 +13,10 @@ export function useDeals(category?: string, limit?: number) {
       
       if (category) {
         query = query.eq('category', category);
+      }
+
+      if (isAchadinho !== undefined) {
+        query = query.eq('is_achadinho', isAchadinho);
       }
       
       if (limit) {
