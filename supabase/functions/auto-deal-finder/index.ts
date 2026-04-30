@@ -9,6 +9,31 @@ const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+const NICHE_KEYWORDS = [
+  "gamer", "pc", "notebook", "laptop", "smartphone", "celular", "monitor", "teclado", "mouse", 
+  "fone", "headphone", "console", "playstation", "xbox", "nintendo", "hardware", "processador", 
+  "placa", "gpu", "ram", "ssd", "hd", "roteador", "wi-fi", "smart", "alexa", "echo", "tablet", 
+  "ipad", "kindle", "watch", "iphone", "galaxy", "moto", "xiaomi", "redmi", "poco", "razer", 
+  "logitech", "corsair", "hyperx", "asus", "acer", "dell", "lenovo", "hp", "samsung", "lg", 
+  "tcl", "msi", "gigabyte", "rtx", "gtx", "ryzen", "intel", "core i", "gaming"
+];
+
+const FORBIDDEN_KEYWORDS = [
+  "roupa", "camiseta", "calça", "sapato", "tenis", "moda", "cozinha", "panela", "frigideira", 
+  "prato", "talher", "banheiro", "lixeira", "toalha", "escova", "maquiagem", "beleza", "perfume", 
+  "hidratante", "shampoo", "condicionador", "mangueira", "jardim", "ferramenta", "martelo", 
+  "furadeira", "parafusadeira", "cinto", "mochila", "bolsa", "oculos", "suplemento", "vitamina", 
+  "brinquedo", "boneca", "carrinho", "lego", "pet", "ração", "coleira", "limpeza", "detergente", 
+  "amaciante"
+];
+
+function isSafeProduct(title: string): boolean {
+  const t = title.toLowerCase();
+  const hasNicheWord = NICHE_KEYWORDS.some(word => t.includes(word));
+  const hasForbiddenWord = FORBIDDEN_KEYWORDS.some(word => t.includes(word));
+  return hasNicheWord && !hasForbiddenWord;
+}
+
 async function generateSignature(timestamp: number, appId: string, secret: string) {
   const data = appId + timestamp + secret;
   const msgUint8 = new TextEncoder().encode(data);
@@ -54,6 +79,8 @@ serve(async (req: Request) => {
     
     let saved = 0;
     for (const item of offers) {
+      if (!isSafeProduct(item.productName)) continue;
+      
       // Salva apenas se tiver algum desconto visível
       const { error } = await supabase.from("pending_deals").insert({
         title: item.productName,
