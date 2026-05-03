@@ -30,11 +30,14 @@ const FORBIDDEN_KEYWORDS = [
   "amaciante"
 ];
 
-function isSafeProduct(title: string): boolean {
+function hasForbiddenWord(title: string): boolean {
   const t = title.toLowerCase();
-  const hasNicheWord = NICHE_KEYWORDS.some(word => t.includes(word));
-  const hasForbiddenWord = FORBIDDEN_KEYWORDS.some(word => t.includes(word));
-  return hasNicheWord && !hasForbiddenWord;
+  return FORBIDDEN_KEYWORDS.some(word => t.includes(word));
+}
+
+function hasNicheWord(title: string): boolean {
+  const t = title.toLowerCase();
+  return NICHE_KEYWORDS.some(word => t.includes(word));
 }
 
 serve(async () => {
@@ -109,12 +112,16 @@ serve(async () => {
         const currentPrice = item.price;
         const originalPrice = item.original_price;
         
-        if (!currentPrice || !isSafeProduct(item.title)) continue;
+        if (!currentPrice || hasForbiddenWord(item.title)) continue;
+
+        const isNiche = hasNicheWord(item.title);
 
         let discountLabel = "Oferta";
+        let score = 0;
         if (originalPrice && originalPrice > currentPrice) {
             const pct = Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
             discountLabel = `${pct}% OFF`;
+            score = pct;
         }
         
         const affiliateLink = `${item.permalink}?matt_tool=${MATT_TOOL}&matt_word=${MATT_WORD}`;
@@ -131,22 +138,68 @@ serve(async () => {
           source_url: item.permalink,
           affiliate_link: affiliateLink,
           status: "pending",
+          platform: "Mercado Livre",
+          category: term,
+          is_niche: isNiche,
+          score: score
         });
       }
     }
 
     if (allToInsert.length > 0) {
       console.log(`[ML] Tentando salvar ${allToInsert.length} itens no banco em massa...`);
+      
+      // Mapear para o formato pending_deals
+      const pendingDealsData = allToInsert.map(item => ({
+          external_id: item.external_id,
+          title: item.title,
+          image: item.image,
+          price: item.price,
+          original_price: item.original_price,
+          discount: item.discount,
+          store: item.store,
+          source_url: item.source_url,
+          affiliate_link: item.affiliate_link,
+          status: item.status
+      }));
+
       const { error, count } = await supabase
         .from("pending_deals")
-        .upsert(allToInsert, { onConflict: "external_id" });
+        .upsert(pendingDealsData, { onConflict: "external_id" });
 
       if (error) {
-        console.error(`[ML] Erro ao salvar no banco:`, error.message, error.details);
+        console.error(`[ML] Erro ao salvar em pending_deals:`, error.message, error.details);
       } else {
-        totalSaved = allToInsert.length;
-        console.log(`[ML] Sucesso! ${totalSaved} itens processados.`);
+        totalSaved = pendingDealsData.length;
+        console.log(`[ML] Sucesso! ${totalSaved} itens salvos em pending_deals.`);
       }
+
+      // Salvar em bot_offers
+      const botOffersData = allToInsert.map(item => ({
+          external_id: item.external_id,
+          platform: item.platform,
+          title: item.title,
+          price: item.price,
+          original_price: item.original_price,
+          discount: item.discount,
+          affiliate_link: item.affiliate_link,
+          image: item.image,
+          category: item.category,
+          is_niche: item.is_niche,
+          status: item.status,
+          score: item.score
+      }));
+
+      const { error: botError } = await supabase
+        .from("bot_offers")
+        .upsert(botOffersData, { onConflict: "external_id" });
+
+      if (botError) {
+        console.error(`[ML] Erro ao salvar em bot_offers:`, botError.message, botError.details);
+      } else {
+        console.log(`[ML] Sucesso! Itens salvos em bot_offers.`);
+      }
+
     } else {
       console.warn("[ML] Nenhum item encontrado em nenhuma categoria.");
     }

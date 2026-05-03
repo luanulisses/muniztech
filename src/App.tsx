@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Navigation from '@/components/Navigation';
 import UrgencyBar from '@/components/UrgencyBar';
+import WhatsAppCTA from '@/components/WhatsAppCTA';
 
 // Lazy loading pages
 const Home = React.lazy(() => import('@/pages/Home'));
@@ -104,6 +105,7 @@ function AppContent() {
 
       {!isAdminPath && <Footer />}
       {!isAdminPath && <Navigation />}
+      {!isAdminPath && <WhatsAppCTA />}
     </div>
   );
 }

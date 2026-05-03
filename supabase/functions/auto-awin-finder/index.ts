@@ -32,11 +32,19 @@ const FORBIDDEN_KEYWORDS = [
   "amaciante"
 ];
 
-function isSafeProduct(title: string): boolean {
+const BLACKLIST = [
+  "infantil", "brinco", "tarraxa", "bijuteria", "revenda", "atacado", "cápsulas", 
+  "emagrecedor", "suplemento", "vitamina", "unha", "cabelo", "roupa íntima"
+];
+
+function hasForbiddenWord(title: string): boolean {
   const t = title.toLowerCase();
-  const hasNicheWord = NICHE_KEYWORDS.some(word => t.includes(word));
-  const hasForbiddenWord = FORBIDDEN_KEYWORDS.some(word => t.includes(word));
-  return hasNicheWord && !hasForbiddenWord;
+  return FORBIDDEN_KEYWORDS.some(word => t.includes(word)) || BLACKLIST.some(word => t.includes(word));
+}
+
+function hasNicheWord(title: string): boolean {
+  const t = title.toLowerCase();
+  return NICHE_KEYWORDS.some(word => t.includes(word));
 }
 
 serve(async (req: Request) => {
@@ -67,6 +75,8 @@ serve(async (req: Request) => {
         const headers = rows[0].map(h => h.trim());
         console.log(`Processando catálogo completo: ${rows.length - 1} produtos.`);
 
+        const allToInsert: any[] = [];
+
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
           const getCol = (name: string) => {
@@ -84,20 +94,99 @@ serve(async (req: Request) => {
           const link = getCol("aw_deep_link") || getCol("link");
           const image = getCol("image_link") || getCol("aw_image_url") || `https://www.awin1.com/logos/${getCol("advertiser_id")}/logo.gif`;
 
-          if (!isSafeProduct(title)) continue;
+          if (hasForbiddenWord(title)) continue;
+          
+          const isNiche = hasNicheWord(title);
+          const externalId = getCol("aw_product_id") || getCol("product_id") || link;
+          const storeName = getCol("advertiser_name") || getCol("merchant_name") || "Awin Store";
 
-          const { error } = await supabase.from("pending_deals").insert({
+          // Tentar calcular score se tiver preço original
+          const originalPriceCol = getCol("price") || getCol("rrp_price");
+          let baseScore = 50;
+          let discountLabel = "Oferta";
+          let originalPrice = null;
+          
+          if (originalPriceCol && originalPriceCol !== price) {
+              const currPriceNum = parseFloat(price.replace(/[^0-9.]/g, ""));
+              const origPriceNum = parseFloat(originalPriceCol.replace(/[^0-9.]/g, ""));
+              if (origPriceNum > currPriceNum && currPriceNum > 0) {
+                  baseScore = Math.round(((origPriceNum - currPriceNum) / origPriceNum) * 100);
+                  discountLabel = `${baseScore}% OFF`;
+                  originalPrice = originalPriceCol.includes("BRL") ? `R$ ${originalPriceCol.replace(" BRL", "")}` : originalPriceCol;
+              }
+          }
+
+          const priceNumeric = parseFloat(price.replace(/[^0-9.]/g, ""));
+          let bonusPrice = 0;
+          if (priceNumeric >= 80 && priceNumeric <= 250) {
+              bonusPrice = 30;
+          } else if (priceNumeric >= 50 && priceNumeric <= 300) {
+              bonusPrice = 20;
+          }
+
+          const bonusNiche = isNiche ? 40 : 0;
+          const finalScore = baseScore + bonusPrice + bonusNiche;
+
+          allToInsert.push({
+            external_id: externalId,
             title: title,
             image: image,
             price: price.includes("BRL") ? `R$ ${price.replace(" BRL", "")}` : price,
-            store: getCol("advertiser_name") || getCol("merchant_name") || "Awin Store",
+            original_price: originalPrice,
+            discount: discountLabel,
+            store: storeName,
             source_url: link,
             affiliate_link: link,
-            discount: "Oferta",
-            status: "pending"
+            status: "pending",
+            platform: "Awin",
+            category: "Oferta Awin",
+            is_niche: isNiche,
+            score: finalScore
           });
+        }
 
-          if (!error) savedCount++;
+        if (allToInsert.length > 0) {
+          // Lote 1: pending_deals
+          const pendingDealsData = allToInsert.map(item => ({
+              external_id: item.external_id,
+              title: item.title,
+              image: item.image,
+              price: item.price,
+              original_price: item.original_price,
+              discount: item.discount,
+              store: item.store,
+              source_url: item.source_url,
+              affiliate_link: item.affiliate_link,
+              status: item.status
+          }));
+
+          const { error } = await supabase
+            .from("pending_deals")
+            .upsert(pendingDealsData, { onConflict: "external_id" });
+
+          if (!error) {
+            savedCount = pendingDealsData.length;
+          }
+
+          // Lote 2: bot_offers
+          const botOffersData = allToInsert.map(item => ({
+              external_id: item.external_id,
+              platform: item.platform,
+              title: item.title,
+              price: item.price,
+              original_price: item.original_price,
+              discount: item.discount,
+              affiliate_link: item.affiliate_link,
+              image: item.image,
+              category: item.category,
+              is_niche: item.is_niche,
+              status: item.status,
+              score: item.score
+          }));
+
+          await supabase
+            .from("bot_offers")
+            .upsert(botOffersData, { onConflict: "external_id" });
         }
       }
     }
