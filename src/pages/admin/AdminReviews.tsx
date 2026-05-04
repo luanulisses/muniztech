@@ -794,9 +794,16 @@ export default function AdminReviews() {
                                 <input 
                                   type="text" 
                                   value={item.price} 
-                                  onChange={e => updateRankingItem(index, 'price', e.target.value)}
+                                  onChange={e => {
+                                    let val = e.target.value.replace(/[^\d]/g, '');
+                                    if (val) {
+                                      const floatVal = parseFloat(val) / 100;
+                                      val = floatVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                    }
+                                    updateRankingItem(index, 'price', val);
+                                  }}
                                   className="w-full p-3 bg-white border border-surface-container-high rounded-xl font-black text-sm"
-                                  placeholder="R$ 120"
+                                  placeholder="R$ 0,00"
                                 />
                               </div>
                             </div>
@@ -813,13 +820,10 @@ export default function AdminReviews() {
                                 />
                               </div>
                               <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Imagem do Produto</label>
-                                <input 
-                                  type="text" 
-                                  value={item.image} 
-                                  onChange={e => updateRankingItem(index, 'image', e.target.value)}
-                                  className="w-full p-3 bg-white border border-surface-container-high rounded-xl font-label-bold text-xs"
-                                  placeholder="URL da imagem..."
+                                <ImageUpload 
+                                  currentImage={item.image} 
+                                  onUpload={(url) => updateRankingItem(index, 'image', url)} 
+                                  label="Imagem do Produto"
                                 />
                               </div>
                             </div>

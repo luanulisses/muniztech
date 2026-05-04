@@ -139,43 +139,46 @@ serve(async (req: Request) => {
     const isPeakHour = hours >= 18 && hours < 22;
     const minInterval = isPeakHour ? 6 : 10;
 
-    console.log(`[SCHEDULER] Horário: ${hours}h BRT. Pico: ${isPeakHour ? 'SIM' : 'NÃO'}. Intervalo exigido: ${minInterval} min.`);
-
     const { data: lastGlobalList } = await supabase
       .from("bot_offers")
-      .select("last_posted_at, platform")
+      .select("last_posted_at, platform, category")
       .eq("was_sent_whatsapp", true)
       .not("last_posted_at", "is", null)
       .order("last_posted_at", { ascending: false })
-      .limit(1);
+      .limit(3);
 
-    let lastPlatform = "";
+    const lastOne = lastGlobalList?.[0];
     let minutesSinceLast = 999;
 
-    if (lastGlobalList && lastGlobalList.length > 0) {
-      const lastPost = lastGlobalList[0];
-      lastPlatform = lastPost.platform || "";
-      const lastTime = new Date(lastPost.last_posted_at).getTime();
+    if (lastOne) {
+      const lastTime = new Date(lastOne.last_posted_at).getTime();
       minutesSinceLast = Math.floor((now.getTime() - lastTime) / (1000 * 60));
-      
-      console.log(`[SCHEDULER] Tempo desde último envio: ${minutesSinceLast} minutos (Plataforma anterior: ${lastPlatform})`);
+    }
 
-      if (minutesSinceLast < minInterval) {
-        console.log(`[SCHEDULER] Abortando! O intervalo mínimo no momento é de ${minInterval} minutos.`);
-        return new Response(JSON.stringify({ message: "Intervalo anti-spam ativo" }), { status: 200 });
-      }
+    console.log(`[SCHEDULER] Horário de pico: ${isPeakHour ? 'SIM' : 'NÃO'}`);
+    console.log(`[SCHEDULER] Intervalo mínimo aplicado: ${minInterval} minutos`);
+    console.log(`[SCHEDULER] Tempo desde último envio: ${minutesSinceLast} minutos`);
+
+    if (minutesSinceLast < minInterval) {
+      console.log(`[SCHEDULER] Abortando! O intervalo mínimo no momento é de ${minInterval} minutos.`);
+      return new Response(JSON.stringify({ message: "Intervalo anti-spam ativo" }), { status: 200 });
+    }
+
+    // 2. Rotação: Manual -> Shopee -> Awin
+    const lastRotation = lastGlobalList?.map(d => d.category === 'manual' ? 'manual' : d.platform) || [];
+    console.log(`[SCHEDULER] Últimas 3 plataformas/categorias enviadas: ${lastRotation.join(" -> ") || "Nenhuma"}`);
+
+    const lastCat = lastRotation[0];
+    let targetOrder = [];
+    if (lastCat === 'manual') {
+      targetOrder = ['Shopee', 'Awin', 'manual'];
+    } else if (lastCat === 'Shopee') {
+      targetOrder = ['Awin', 'manual', 'Shopee'];
     } else {
-      console.log(`[SCHEDULER] Nenhum envio prévio encontrado. Iniciando livremente.`);
+      targetOrder = ['manual', 'Shopee', 'Awin'];
     }
 
-    // 2. Intercalação de Plataformas
-    let preferredPlatform = "Shopee";
-    let alternatePlatform = "Awin";
-
-    if (lastPlatform === "Shopee") {
-      preferredPlatform = "Awin";
-      alternatePlatform = "Shopee";
-    }
+    console.log(`[SCHEDULER] Vez atual da rotação: ${targetOrder[0]}`);
 
     function getQualityDiscardReason(deal: any) {
         if (!deal.title || deal.title.length < 5) return "Título muito curto";
@@ -186,118 +189,80 @@ serve(async (req: Request) => {
         return null;
     }
 
-    async function findValidOfferForPlatform(platform: string) {
-      // Prioridade 1: Nova Oferta (Busca as top 30 para poder aplicar bônus e reordenar)
-      const { data: newOffersRaw } = await supabase
-        .from("bot_offers")
-        .select("*")
-        .eq("status", "pending")
-        .eq("was_sent_whatsapp", false)
-        .or(`platform.eq.${platform},category.eq.manual`)
-        .order("score", { ascending: false })
-        .order("created_at", { ascending: false })
-        .limit(30);
+    async function findOfferByType(type: string) {
+       const isManual = type === 'manual';
+       
+       // 1. Tenta Nova
+       let query = supabase.from("bot_offers").select("*").eq("status", "pending").eq("was_sent_whatsapp", false);
+       if (isManual) {
+         query = query.eq("category", "manual");
+       } else {
+         query = query.eq("platform", type).neq("category", "manual");
+       }
+       
+       const { data: news } = await query.order("score", { ascending: false }).limit(5);
+       if (news && news.length > 0) {
+         for (const d of news) {
+           const reason = getQualityDiscardReason(d);
+           if (!reason) return { deal: d, isLoop: false };
+           await supabase.from("bot_offers").update({ status: "rejected" }).eq("id", d.id);
+         }
+       }
 
-      let newOffers = newOffersRaw || [];
-      
-      // Aplica bônus de +30 para categoria manual
-      newOffers.forEach(deal => {
-          if (deal.category === 'manual') {
-              deal.score = (deal.score || 0) + 30;
-          }
-      });
-      // Reordena localmente pelo score final
-      newOffers.sort((a, b) => b.score - a.score);
+       // 2. Tenta Loop
+       const todayMidnight = new Date(brtTime);
+       todayMidnight.setUTCHours(0,0,0,0);
+       const todayIso = new Date(todayMidnight.getTime() + (3 * 60 * 60 * 1000)).toISOString();
+       const twoHoursAgo = new Date(now.getTime() - (2 * 60 * 60 * 1000)).toISOString();
 
-      if (newOffers.length > 0) {
-        for (const deal of newOffers) {
-           const reason = getQualityDiscardReason(deal);
-           if (reason) {
-               console.log(`[SCHEDULER] Oferta "${deal.title}" (Score: ${deal.score}) DESCARTADA. Motivo: ${reason}`);
-               await supabase.from("bot_offers").update({ status: "rejected" }).eq("id", deal.id);
-               continue;
-           }
-           if (deal.category === 'manual') {
-               console.log(`[SCHEDULER] Oferta manual detectada: bônus +30 aplicado`);
-           }
-           return { deal, isLoop: false };
-        }
-      }
+       let loopQuery = supabase.from("bot_offers").select("*").eq("status", "posted").eq("was_sent_whatsapp", true)
+         .lt("send_count", 3).lt("last_posted_at", twoHoursAgo).gte("created_at", todayIso);
+       
+       if (isManual) {
+         loopQuery = loopQuery.eq("category", "manual");
+       } else {
+         loopQuery = loopQuery.eq("platform", type).neq("category", "manual");
+       }
 
-      // Prioridade 2: Loop (Ofertas do Dia)
-      const todayMidnight = new Date(brtTime);
-      todayMidnight.setUTCHours(0,0,0,0);
-      const todayIso = new Date(todayMidnight.getTime() + (3 * 60 * 60 * 1000)).toISOString();
-      const twoHoursAgo = new Date(now.getTime() - (2 * 60 * 60 * 1000)).toISOString();
-
-      const { data: loopOffersRaw } = await supabase
-        .from("bot_offers")
-        .select("*")
-        .eq("status", "posted")
-        .eq("was_sent_whatsapp", true)
-        .or(`platform.eq.${platform},category.eq.manual`)
-        .lt("send_count", 3)
-        .lt("last_posted_at", twoHoursAgo)
-        .gte("created_at", todayIso)
-        .order("score", { ascending: false })
-        .limit(30);
-
-      let loopOffers = loopOffersRaw || [];
-      
-      // Aplica bônus de +30 para categoria manual também no loop
-      loopOffers.forEach(deal => {
-          if (deal.category === 'manual') {
-              deal.score = (deal.score || 0) + 30;
-          }
-      });
-      // Reordena localmente pelo score final
-      loopOffers.sort((a, b) => b.score - a.score);
-
-      if (loopOffers.length > 0) {
-        for (const deal of loopOffers) {
-           const reason = getQualityDiscardReason(deal);
-           if (reason) {
-               console.log(`[SCHEDULER] Oferta de LOOP "${deal.title}" DESCARTADA. Motivo: ${reason}`);
-               await supabase.from("bot_offers").update({ status: "rejected_loop" }).eq("id", deal.id);
-               continue;
-           }
-           if (deal.category === 'manual') {
-               console.log(`[SCHEDULER] Oferta manual detectada (Loop): bônus +30 aplicado`);
-           }
-           return { deal, isLoop: true };
-        }
-      }
-
-      return null;
+       const { data: loops } = await loopQuery.order("score", { ascending: false }).limit(5);
+       if (loops && loops.length > 0) {
+         for (const d of loops) {
+           const reason = getQualityDiscardReason(d);
+           if (!reason) return { deal: d, isLoop: true };
+           await supabase.from("bot_offers").update({ status: "rejected_loop" }).eq("id", d.id);
+         }
+       }
+       return null;
     }
 
-    // Tentar plataforma preferencial
-    let selected = await findValidOfferForPlatform(preferredPlatform);
-    
-    // Se não achou na preferencial, faz fallback pra plataforma alternativa
-    if (!selected) {
-      console.log(`[SCHEDULER] Sem ofertas válidas para ${preferredPlatform}, tentando fallback para ${alternatePlatform}...`);
-      selected = await findValidOfferForPlatform(alternatePlatform);
+    let selected = null;
+    for (const type of targetOrder) {
+      selected = await findOfferByType(type);
+      if (selected) {
+        if (type === 'manual' && lastCat === 'manual') {
+          console.log(`[SCHEDULER] Enviando manual seguida pois Shopee/Awin estão vazias.`);
+        }
+        break;
+      }
     }
 
     if (!selected) {
-      console.log(`[SCHEDULER] Nenhuma oferta válida encontrada em nenhuma plataforma.`);
+      console.log(`[SCHEDULER] Nenhuma oferta válida encontrada em nenhuma plataforma/categoria.`);
       return new Response(JSON.stringify({ message: "Nenhuma oferta na fila." }), { status: 200 });
     }
 
     const { deal, isLoop } = selected;
 
-    console.log(`[SCHEDULER] Plataforma escolhida: ${deal.platform}`);
+    console.log(`[SCHEDULER] Selecionado: "${deal.title}" (${deal.platform} / ${deal.category})`);
     console.log(`[SCHEDULER] Tipo: ${isLoop ? "loop" : "nova oferta"}`);
-    console.log(`[SCHEDULER] Processando oferta: "${deal.title}"`);
-    console.log(`[SCHEDULER] Análise de Score -> Total: ${deal.score} (Nicho: ${deal.is_niche ? 'Sim (+40)' : 'Não'}, Preço: ${deal.price})`);
+    console.log(`[SCHEDULER] Score Final: ${deal.score}`);
 
-    // Fluxo Final
+    // 3. Fluxo de Blog / Slug
     let slug = "";
     let publishedBlog = false;
 
-    if (deal.is_niche && !isLoop) {
-      // 1. Verificar se já existe no blog pelo link
+    if (deal.is_niche) {
+      // Verificar se já existe no blog pelo link
       const { data: existingDeal } = await supabase
         .from("deals")
         .select("slug")
@@ -305,11 +270,11 @@ serve(async (req: Request) => {
         .limit(1);
 
       if (existingDeal && existingDeal.length > 0) {
-          console.log(`[SCHEDULER] Oferta já existe no Blog. Reutilizando slug: ${existingDeal[0].slug}`);
+          console.log(`[SCHEDULER] Reutilizando slug: ${existingDeal[0].slug}`);
           slug = existingDeal[0].slug;
           publishedBlog = true;
-      } else {
-          // 2. Gerar slug seguro e único
+      } else if (!isLoop) {
+          // Gerar slug seguro e único para novas ofertas de nicho
           const baseTitle = deal.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "").substring(0, 40);
           const shortId = (deal.external_id || Math.random().toString(36).substring(7)).substring(0, 6);
           slug = `${baseTitle}-${shortId}`;
@@ -327,53 +292,34 @@ serve(async (req: Request) => {
           });
 
           if (postError) {
-            // Se for duplicidade (Unique Violation), não travamos o robô
             if (postError.code === "23505" || postError.message.includes("duplicate key")) {
-                console.warn(`[SCHEDULER] Aviso: Slug duplicado (${slug}). Fallback ativado para link direto.`);
+                console.warn(`[SCHEDULER] Slug duplicado. Usando link direto.`);
                 slug = ""; 
-                publishedBlog = false;
             } else {
-                console.error(`[SCHEDULER] Erro grave ao postar no blog:`, postError.message);
-                return new Response(JSON.stringify({ error: "Falha ao postar no blog: " + postError.message }), { status: 500 });
+                console.error(`[SCHEDULER] Erro blog:`, postError.message);
             }
           } else {
             publishedBlog = true;
           }
       }
-    } else if (deal.is_niche && isLoop) {
-      // Busca slug real no blog para ter certeza absoluta de não quebrar o link
-      const { data: loopDeal } = await supabase
-        .from("deals")
-        .select("slug")
-        .eq("link", deal.affiliate_link)
-        .limit(1);
-      
-      if (loopDeal && loopDeal.length > 0) {
-          slug = loopDeal[0].slug;
-      } else {
-          // Se sumiu do blog, manda link afiliado para não perder a venda
-          slug = ""; 
-      }
     }
 
-    // Disparar WhatsApp
+    // 4. Disparar WhatsApp
     const waResult = await sendWhatsAppMessage(deal, deal.is_niche, slug);
 
     if (waResult && waResult.success) {
-      // Update Final
-      const currentCount = deal.send_count || 0;
       await supabase.from("bot_offers").update({
         status: "posted",
         was_sent_whatsapp: true,
         was_published_blog: publishedBlog || deal.was_published_blog,
-        send_count: currentCount + 1,
+        send_count: (deal.send_count || 0) + 1,
         last_posted_at: new Date().toISOString()
       }).eq("id", deal.id);
 
       console.log(`[SCHEDULER] Enviado com sucesso!`);
       return new Response(JSON.stringify({ success: true, deal: deal.title }), { status: 200 });
     } else {
-      console.error(`[SCHEDULER] Erro no WhatsApp:`, waResult?.error);
+      console.error(`[SCHEDULER] Erro WhatsApp:`, waResult?.error);
       return new Response(JSON.stringify({ error: "Falha Evolution API" }), { status: 500 });
     }
 
