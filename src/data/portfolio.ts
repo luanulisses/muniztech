@@ -46,7 +46,7 @@ export const PORTFOLIO_PROFILE: PortfolioProfile = {
   role: 'Fundador & Especialista em Tecnologia',
   subrole: 'Tecnologia • Sistemas • ERP • IA • Automação',
   bio: 'Meu nome é Luan Muniz. Atuo com tecnologia, desenvolvimento de sistemas, ERP Senior, Oracle, inteligência artificial, automações e soluções digitais. Meu objetivo é transformar problemas reais em soluções práticas, escaláveis e eficientes.',
-  image: '/portfolio/luan-muniz.png',
+  image: '/portfolio/luan-muniz.jpg',
   fallbackInitials: 'LM',
   whatsappNumber: '5562999999999',
   whatsappMessage: 'Ol%C3%A1%2C%20vim%20pelo%20site%20da%20Muniz%20Tech%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento.',
