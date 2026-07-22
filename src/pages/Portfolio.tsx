@@ -271,14 +271,14 @@ export default function Portfolio() {
               custom={0}
               className="lg:col-span-5 flex justify-center"
             >
-              <div className="w-full max-w-[280px] sm:max-w-[320px] h-[340px] sm:h-[390px] rounded-[32px] bg-white border-4 border-secondary/20 p-2 shadow-xl shadow-black/5 relative group">
+              <div className="w-full max-w-[280px] sm:max-w-[320px] aspect-[4/5] rounded-[32px] bg-white border-4 border-secondary/20 p-2 shadow-xl shadow-black/5 relative group">
                 <div className="w-full h-full rounded-[24px] overflow-hidden bg-surface-container-low relative flex items-center justify-center">
                   {!imageError ? (
                     <img
                       src={PORTFOLIO_PROFILE.image}
                       alt={PORTFOLIO_PROFILE.name}
                       onError={() => setImageError(true)}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
                     <div className="w-full h-full bg-slate-900 flex flex-col items-center justify-center text-white space-y-2">
