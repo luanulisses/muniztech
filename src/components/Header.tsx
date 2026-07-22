@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPortal } from 'react-dom';
-import { Menu, Search, X, ChevronRight, Home, MessageSquareText, Tag, Info, Phone } from 'lucide-react';
+import { Menu, Search, X, ChevronRight, Home, MessageSquareText, Tag, Info, Phone, Briefcase } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -28,6 +28,7 @@ export default function Header() {
     { to: '/analises', label: 'Avaliações', icon: MessageSquareText },
     { to: '/ofertas', label: 'Ofertas', icon: Tag },
     { to: '/achadinhos', label: 'Achadinhos', icon: Tag },
+    { to: '/conheca-a-muniz-tech', label: 'Conheça a Muniz Tech', icon: Briefcase },
     { to: '/sobre', label: 'Sobre Nós', icon: Info },
     { to: '/contato', label: 'Contato', icon: Phone },
   ];
@@ -121,8 +122,8 @@ export default function Header() {
           </div>
 
           {/* Center: Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8 font-black uppercase text-xs tracking-widest">
-            {navLinks.slice(0, 4).map((link) => {
+          <nav className="hidden md:flex items-center gap-5 font-black uppercase text-xs tracking-widest">
+            {navLinks.slice(0, 5).map((link) => {
               const isActive = location.pathname === link.to || (link.to !== '/' && location.pathname.startsWith(link.to));
               return (
                 <Link

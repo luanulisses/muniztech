@@ -20,6 +20,7 @@ const Listicle = React.lazy(() => import('@/pages/Listicle'));
 const Search = React.lazy(() => import('@/pages/Search'));
 const Achadinhos = React.lazy(() => import('@/pages/Achadinhos'));
 const TrabalheConosco = React.lazy(() => import('@/pages/TrabalheConosco'));
+const Portfolio = React.lazy(() => import('@/pages/Portfolio'));
 const PoliticaEditorial = React.lazy(() => import('@/pages/PoliticaEditorial'));
 const TermosDeUso = React.lazy(() => import('@/pages/TermosDeUso'));
 const Privacidade = React.lazy(() => import('@/pages/Privacidade'));
@@ -58,10 +59,11 @@ function LoadingSpinner() {
 function AppContent() {
   const location = useLocation();
   const isAdminPath = location.pathname.startsWith('/admin');
+  const isPortfolioPath = location.pathname === '/conheca-a-muniz-tech' || location.pathname === '/portfolio';
 
   return (
     <div className="min-h-screen flex flex-col bg-surface overflow-x-hidden">
-      {!isAdminPath && <UrgencyBar />}
+      {!isAdminPath && !isPortfolioPath && <UrgencyBar />}
       {!isAdminPath && <Header />}
 
       <main className="flex-grow">
@@ -85,6 +87,8 @@ function AppContent() {
               <Route path="/termos-de-uso" element={<PageWrapper><TermosDeUso /></PageWrapper>} />
               <Route path="/privacidade" element={<PageWrapper><Privacidade /></PageWrapper>} />
               <Route path="/achadinhos" element={<PageWrapper><Achadinhos /></PageWrapper>} />
+              <Route path="/conheca-a-muniz-tech" element={<PageWrapper><Portfolio /></PageWrapper>} />
+              <Route path="/portfolio" element={<PageWrapper><Portfolio /></PageWrapper>} />
               <Route path="/artigo/5-gadgets-baratos" element={<PageWrapper><Listicle /></PageWrapper>} />
 
               {/* Admin Login (No Layout) */}
