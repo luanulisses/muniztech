@@ -15,7 +15,8 @@ import {
   Search as SearchIcon,
   BadgeCheck,
   ShieldCheck,
-  Handshake
+  Handshake,
+  Tag as TagIcon
 } from 'lucide-react';
 import { CATEGORIES } from '@/constants';
 import * as Icons from 'lucide-react';
@@ -24,12 +25,12 @@ import { useReviews } from '@/hooks/useReviews';
 
 export default function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { deals, loading: dealsLoading } = useDeals();
-  const { reviews, loading: reviewsLoading } = useReviews();
-  
+  const { deals, loading: dealsLoading, error: dealsError } = useDeals();
+  const { reviews, loading: reviewsLoading, error: reviewsError } = useReviews();
+
   const featuredDeals = deals.filter((d) => !d.isAchadinho).slice(0, 4);
   const achadinhos = deals.filter((d) => d.isAchadinho);
-  
+
   useEffect(() => {
     if (reviews.length === 0) return;
     const timer = setInterval(() => {
@@ -38,7 +39,7 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [reviews.length]);
 
-  if (dealsLoading || reviewsLoading) {
+  if ((dealsLoading || reviewsLoading) && deals.length === 0 && reviews.length === 0) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center">
         <Loader2 className="w-12 h-12 text-secondary animate-spin" />
@@ -50,10 +51,27 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-12 pb-32 bg-surface">
-      {/* 1. HERO SECTION (CARROSSEL DE NOVIDADES) */}
+      {/* 1. HERO SECTION (CARROSSEL DE NOVIDADES OU FALLBACK INSTITUCIONAL) */}
       <section className="bg-white border-b border-surface-container-high pb-12 pt-4 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8 w-full">
-          {mainHeroProduct && (
+          {reviewsLoading && reviews.length === 0 ? (
+            /* Skeleton Loading no espaço da Hero */
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[350px]">
+              <div className="space-y-4 animate-pulse">
+                <div className="w-32 h-6 bg-surface-container-low rounded-full"></div>
+                <div className="w-3/4 h-10 bg-surface-container-low rounded-xl"></div>
+                <div className="w-full h-16 bg-surface-container-low rounded-xl"></div>
+                <div className="flex gap-4 pt-4">
+                  <div className="w-40 h-12 bg-surface-container-low rounded-2xl"></div>
+                  <div className="w-40 h-12 bg-surface-container-low rounded-2xl"></div>
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <div className="w-72 h-72 bg-surface-container-low rounded-3xl animate-pulse"></div>
+              </div>
+            </div>
+          ) : mainHeroProduct ? (
+            /* Hero com Produto em Destaque */
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentIndex}
@@ -122,21 +140,69 @@ export default function Home() {
                 </div>
               </motion.div>
             </AnimatePresence>
+          ) : (
+            /* Fallback Institucional Mínimo quando não há reviews */
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center py-6">
+              <div className="space-y-4 md:space-y-6 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-secondary/10 text-secondary rounded-full font-black text-[10px] md:text-xs uppercase tracking-widest border border-secondary/20 mx-auto lg:mx-0">
+                  <BadgeCheck className="w-3.5 h-3.5" />
+                  <span>Portal Oficial MunizTech</span>
+                </div>
+
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-on-surface leading-tight tracking-tight">
+                  As melhores avaliações e ofertas de tecnologia{' '}
+                  <span className="text-secondary block">em um só lugar.</span>
+                </h1>
+
+                <p className="text-sm md:text-lg lg:text-xl text-on-surface-variant font-label-bold leading-relaxed">
+                  Análises detalhadas, comparativos sinceros e as melhores ofertas de tecnologia selecionadas pelo time MunizTech.
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-4 pt-2 md:pt-4">
+                  <Link
+                    to="/analises"
+                    className="w-full sm:w-auto px-8 py-4 bg-secondary text-white rounded-2xl font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-secondary/20"
+                  >
+                    <SearchIcon className="w-5 h-5" /> Ver Avaliações
+                  </Link>
+                  <Link
+                    to="/ofertas"
+                    className="w-full sm:w-auto px-8 py-4 bg-surface-container-highest text-on-surface rounded-2xl font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2 hover:bg-surface-container-high transition-colors"
+                  >
+                    <TagIcon className="w-5 h-5 text-secondary" /> Ver Ofertas
+                  </Link>
+                </div>
+              </div>
+
+              <div className="flex justify-center">
+                <div className="w-full max-w-sm md:max-w-md aspect-square rounded-[32px] shadow-xl bg-surface-container-low flex flex-col items-center justify-center p-8 text-center space-y-4 border border-surface-container-high">
+                  <div className="w-16 h-16 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center">
+                    <ShieldCheck className="w-10 h-10" />
+                  </div>
+                  <h3 className="text-xl font-black text-on-surface uppercase">Tecnologia com Verdade</h3>
+                  <p className="text-xs font-label-bold text-on-surface-variant">
+                    Monitoramento diário dos melhores preços nas maiores lojas parceiras do Brasil.
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
 
-          {/* Dots Pagination */}
-          <div className="flex justify-center gap-2 md:gap-3 mt-8 md:mt-12">
-            {reviews.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentIndex(idx)}
-                className={`transition-all duration-300 rounded-full h-1.5 md:h-2 ${
-                  idx === currentIndex ? 'w-8 md:w-10 bg-secondary' : 'w-1.5 md:w-2 bg-surface-container-high hover:bg-surface-container-highest'
-                }`}
-                aria-label={`Ir para o slide ${idx + 1}`}
-              />
-            ))}
-          </div>
+          {/* Dots Pagination (Apenas quando há mais de 1 review) */}
+          {reviews.length > 1 && (
+            <div className="flex justify-center gap-2 md:gap-3 mt-8 md:mt-12">
+              {reviews.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentIndex(idx)}
+                  className={`transition-all duration-300 rounded-full h-1.5 md:h-2 ${
+                    idx === currentIndex ? 'w-8 md:w-10 bg-secondary' : 'w-1.5 md:w-2 bg-surface-container-high hover:bg-surface-container-highest'
+                  }`}
+                  aria-label={`Ir para o slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -172,55 +238,61 @@ export default function Home() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-          {featuredDeals.map((deal, idx) => (
-            <div
-              key={deal.id}
-              className="bg-white border border-surface-container-high rounded-2xl md:rounded-[32px] p-3 md:p-5 shadow-lg hover:shadow-xl transition-all relative flex flex-col group"
-            >
-              <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 px-2 py-1 md:px-3 md:py-1.5 bg-red-600 text-white text-[8px] md:text-[11px] font-black uppercase rounded-lg shadow-md">
-                {deal.discount} OFF
-              </div>
-              <div className="h-28 md:h-48 flex items-center justify-center p-2 md:p-4">
-                <img
-                  src={deal.image}
-                  className="max-h-full object-contain mix-blend-multiply transition-transform group-hover:scale-105"
-                  alt={deal.title}
-                />
-              </div>
+        {featuredDeals.length > 0 ? (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+            {featuredDeals.map((deal) => (
+              <div
+                key={deal.id}
+                className="bg-white border border-surface-container-high rounded-2xl md:rounded-[32px] p-3 md:p-5 shadow-lg hover:shadow-xl transition-all relative flex flex-col group"
+              >
+                <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 px-2 py-1 md:px-3 md:py-1.5 bg-red-600 text-white text-[8px] md:text-[11px] font-black uppercase rounded-lg shadow-md">
+                  {deal.discount} OFF
+                </div>
+                <div className="h-28 md:h-48 flex items-center justify-center p-2 md:p-4">
+                  <img
+                    src={deal.image}
+                    className="max-h-full object-contain mix-blend-multiply transition-transform group-hover:scale-105"
+                    alt={deal.title}
+                  />
+                </div>
 
-              <div className="mt-4 space-y-3 flex-grow flex flex-col">
-                <div className="flex flex-wrap items-center gap-1 md:gap-2">
-                  <div className="flex items-center gap-1 text-[8px] md:text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-50 w-fit px-1.5 py-0.5 md:px-2 md:py-1 rounded-md">
-                    <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" /> Últimas
+                <div className="mt-4 space-y-3 flex-grow flex flex-col">
+                  <div className="flex flex-wrap items-center gap-1 md:gap-2">
+                    <div className="flex items-center gap-1 text-[8px] md:text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-50 w-fit px-1.5 py-0.5 md:px-2 md:py-1 rounded-md">
+                      <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" /> Últimas
+                    </div>
+                    <div className="text-[8px] md:text-[10px] font-black text-on-surface-variant uppercase tracking-widest bg-surface-container-low px-1.5 py-0.5 md:px-2 md:py-1 rounded-md">
+                      {deal.store}
+                    </div>
                   </div>
-                  <div className="text-[8px] md:text-[10px] font-black text-on-surface-variant uppercase tracking-widest bg-surface-container-low px-1.5 py-0.5 md:px-2 md:py-1 rounded-md">
-                    {deal.store}
+                  <h3 className="font-black text-on-surface leading-tight line-clamp-2 text-[10px] md:text-base">
+                    {deal.title}
+                  </h3>
+                  <div className="mt-auto space-y-0.5 pt-2">
+                    <div className="text-[8px] md:text-xs text-on-surface-variant line-through font-label-bold">
+                      {deal.originalPrice}
+                    </div>
+                    <div className="text-base md:text-3xl font-black text-on-surface leading-none tracking-tighter">
+                      {deal.price}
+                    </div>
                   </div>
+                  <a
+                    href={deal.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full mt-2 md:mt-4 py-2 md:py-3 bg-secondary text-white rounded-lg md:rounded-xl font-black uppercase text-[8px] md:text-xs tracking-widest flex items-center justify-center transition-transform hover:bg-secondary-fixed-variant active:scale-95 shadow-md shadow-secondary/20"
+                  >
+                    VER MELHOR PREÇO
+                  </a>
                 </div>
-                <h3 className="font-black text-on-surface leading-tight line-clamp-2 text-[10px] md:text-base">
-                  {deal.title}
-                </h3>
-                <div className="mt-auto space-y-0.5 pt-2">
-                  <div className="text-[8px] md:text-xs text-on-surface-variant line-through font-label-bold">
-                    {deal.originalPrice}
-                  </div>
-                  <div className="text-base md:text-3xl font-black text-on-surface leading-none tracking-tighter">
-                    {deal.price}
-                  </div>
-                </div>
-                <a
-                  href={deal.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full mt-2 md:mt-4 py-2 md:py-3 bg-secondary text-white rounded-lg md:rounded-xl font-black uppercase text-[8px] md:text-xs tracking-widest flex items-center justify-center transition-transform hover:bg-secondary-fixed-variant active:scale-95 shadow-md shadow-secondary/20"
-                >
-                  VER MELHOR PREÇO
-                </a>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-8 text-center bg-white rounded-3xl border border-surface-container-high">
+            <p className="text-sm font-black text-on-surface-variant uppercase">Nenhuma oferta relâmpago no momento.</p>
+          </div>
+        )}
       </section>
 
       {/* 4. ACHADINHOS (TOP 5) */}
@@ -415,7 +487,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Telegram */}
+          {/* Telegram / WhatsApp VIP */}
           <div className="bg-slate-900 rounded-3xl md:rounded-4xl p-6 md:p-8 text-center space-y-6 shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(37,211,102,0.15),transparent)]" />
             <div className="w-14 h-14 md:w-16 md:h-16 bg-[#0088cc] text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg relative z-10">
