@@ -34,7 +34,7 @@ const AdminPendingDeals = React.lazy(() => import('@/pages/admin/AdminPendingDea
 const AdminDeals = React.lazy(() => import('@/pages/admin/AdminDeals'));
 const AdminReviews = React.lazy(() => import('@/pages/admin/AdminReviews'));
 const AdminCategories = React.lazy(() => import('@/pages/admin/AdminCategories'));
-const AdminLeads = React.lazy(() => import('@/pages/admin/AdminLeads'));
+const AdminLeads = React.lazy(() => import('./pages/admin/AdminLeads'));
 
 function PageWrapper({ children }: { children: React.ReactNode }) {
   return (
