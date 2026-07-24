@@ -28,17 +28,47 @@ interface ChatMessage {
   actionType?: 'whatsapp' | 'service_select';
 }
 
-const SERVICE_SUGGESTIONS = [
-  'Desenvolvimento Web',
-  'ERP Senior',
-  'Oracle',
-  'Inteligência Artificial',
-  'Automação',
-  'Dashboards',
-  'Landing Pages',
-  'SaaS',
-  'Integrações API',
+// ── Opções humanizadas de serviços (Sprint 3.2.5) ────────────────────────────
+const SERVICE_OPTIONS = [
+  '🌐 Criar um Site',
+  '📈 Aumentar minhas Vendas',
+  '📊 Relatórios e Dashboards (Power BI)',
+  '🤖 Inteligência Artificial',
+  '⚡ Automatizar Processos',
+  '🏢 Melhorar a Gestão da Empresa',
+  '💻 Suporte Técnico',
+  '📶 Wi-Fi, Redes e Infraestrutura',
+  '🖨️ Impressoras e Equipamentos',
+  '🔗 Integrar Sistemas',
+  '📱 Cartão Digital e QR Code',
+  '📺 TV Corporativa',
+  '🛠️ Não sei o que preciso (Quero ajuda)',
 ];
+
+// Mapeamento: label exibido → categoria interna no CRM
+const SERVICE_DISPLAY_TO_CRM: Record<string, string> = {
+  '🌐 Criar um Site': 'Desenvolvimento Web',
+  '📈 Aumentar minhas Vendas': 'Marketing Digital',
+  '📊 Relatórios e Dashboards (Power BI)': 'Power BI',
+  '🤖 Inteligência Artificial': 'Inteligência Artificial',
+  '⚡ Automatizar Processos': 'Automação',
+  '🏢 Melhorar a Gestão da Empresa': 'ERP / Consultoria',
+  '💻 Suporte Técnico': 'Suporte Técnico',
+  '📶 Wi-Fi, Redes e Infraestrutura': 'Infraestrutura',
+  '🖨️ Impressoras e Equipamentos': 'Equipamentos',
+  '🔗 Integrar Sistemas': 'Integrações API',
+  '📱 Cartão Digital e QR Code': 'Muniz Connect',
+  '📺 TV Corporativa': 'Digital Signage',
+  '🛠️ Não sei o que preciso (Quero ajuda)': 'Consultoria Comercial',
+};
+
+// Opções com destaque visual no chat
+const HIGHLIGHTED_OPTIONS = new Set([
+  '📊 Relatórios e Dashboards (Power BI)',
+  '🤖 Inteligência Artificial',
+  '⚡ Automatizar Processos',
+  '🛠️ Não sei o que preciso (Quero ajuda)',
+]);
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
@@ -60,6 +90,7 @@ export default function MunizAIChat() {
     nome: '',
     empresa: '',
     servico: '',
+    servicoDisplay: '',
     descricao: '',
     telefone: '',
     email: '',
@@ -214,8 +245,8 @@ export default function MunizAIChat() {
       setFormData((prev) => ({ ...prev, empresa: extractedCompany }));
       setStep(3);
       addBotMessage(
-        `Excelente! Qual solução você está buscando para a ${extractedCompany}?`,
-        SERVICE_SUGGESTIONS,
+        `${formDataRef.current.nome || extractedCompany}, qual dessas opções melhor descreve o que você precisa hoje?`,
+        SERVICE_OPTIONS,
         'service_select',
       );
 
@@ -229,10 +260,15 @@ export default function MunizAIChat() {
       }
 
     } else if (currentStep === 3) {
-      // ── ETAPA 3: SERVIÇO ──────────────────────────────────────────────────
-      const cleanServico = userText.trim();
-      setFormData((prev) => ({ ...prev, servico: cleanServico }));
-      setStep(4);
+      // ── ETAPA 3: SERVIÇO (Sprint 3.2.5 — Humanizado) ──────────────────────
+      const displayLabel = userText.trim();
+      const crmCategory = SERVICE_DISPLAY_TO_CRM[displayLabel] || displayLabel;
+
+      setFormData((prev) => ({
+        ...prev,
+        servico: crmCategory,
+        servicoDisplay: displayLabel,
+      }));
 
       if (sessionId && sessionToken) {
         callEdgeFunction({
@@ -243,7 +279,16 @@ export default function MunizAIChat() {
         }).catch((e) => console.warn('[MunizAIChat] send_message step 3:', e));
       }
 
-      addBotMessage(`Excelente escolha! Me conte rapidamente o que você gostaria de resolver ou melhorar.`);
+      // Fluxo especial: "Não sei o que preciso"
+      if (displayLabel.includes('Não sei o que preciso')) {
+        setStep(4);
+        addBotMessage(
+          `Sem problemas! 😊\n\nMe conta rapidamente o que está acontecendo na sua empresa e eu vou te ajudar a identificar a melhor solução.\n\nExemplos:\n• "Minha empresa está desorganizada."\n• "Perco muito tempo com planilhas."\n• "Quero vender mais."\n• "Preciso controlar melhor meu estoque."\n• "Meu computador vive dando problema."`,
+        );
+      } else {
+        setStep(4);
+        addBotMessage(`Excelente escolha! Me conte rapidamente o que você gostaria de resolver ou melhorar com ${crmCategory}.`);
+      }
 
     } else if (currentStep === 4) {
       // ── ETAPA 4: DESCRIÇÃO ────────────────────────────────────────────────
@@ -437,17 +482,28 @@ export default function MunizAIChat() {
                   <span className="text-[9px] text-slate-500 mt-1 font-mono px-1">{msg.timestamp}</span>
 
                   {msg.options && msg.options.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-3 max-w-[90%] pl-8">
-                      {msg.options.map((opt) => (
-                        <button
-                          key={opt}
-                          onClick={() => handleSendMessage(opt)}
-                          className="px-3 py-1.5 bg-slate-900 hover:bg-secondary/20 text-slate-200 hover:text-secondary border border-slate-800 hover:border-secondary/40 rounded-xl text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
-                        >
-                          <span>{opt}</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </button>
-                      ))}
+                    <div className={`mt-3 max-w-[95%] pl-8 ${
+                      msg.actionType === 'service_select'
+                        ? 'grid grid-cols-2 gap-1.5'
+                        : 'flex flex-wrap gap-1.5'
+                    }`}>
+                      {msg.options.map((opt) => {
+                        const isHighlighted = HIGHLIGHTED_OPTIONS.has(opt);
+                        return (
+                          <button
+                            key={opt}
+                            onClick={() => handleSendMessage(opt)}
+                            className={`px-2.5 py-2 rounded-xl text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 text-left leading-tight ${
+                              isHighlighted
+                                ? 'bg-secondary/15 hover:bg-secondary/30 text-secondary border border-secondary/40 hover:border-secondary/60 shadow-sm shadow-secondary/10'
+                                : 'bg-slate-900 hover:bg-secondary/20 text-slate-200 hover:text-secondary border border-slate-800 hover:border-secondary/40'
+                            }`}
+                          >
+                            <span className="flex-1">{opt}</span>
+                            <ChevronRight className="w-3 h-3 shrink-0" />
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
 
