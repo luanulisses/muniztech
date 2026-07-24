@@ -32,10 +32,15 @@ export default function WhatsAppCTA() {
         }
         .wa-float { animation: wa-float 3s ease-in-out infinite; }
         .wa-pulse { animation: wa-pulse 2s infinite; }
+        @media (max-width: 767px) {
+          .whatsapp-floating-cta {
+            display: none !important;
+          }
+        }
       `}</style>
 
       <div
-        className="fixed bottom-24 right-4 md:bottom-8 md:right-6 z-50 flex flex-col items-end gap-2"
+        className="whatsapp-floating-cta hidden md:flex fixed bottom-24 right-4 md:bottom-8 md:right-6 z-30 flex-col items-end gap-2"
         style={{
           transition: 'opacity 0.5s ease, transform 0.5s ease',
           opacity: visible ? 1 : 0,

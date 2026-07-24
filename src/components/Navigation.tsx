@@ -13,7 +13,13 @@ export default function Navigation() {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-surface-container-high shadow-[0_-8px_30px_rgba(0,0,0,0.12)] pb-safe rounded-t-[32px] overflow-hidden translate-z-0">
+    <>
+      <style>{`
+        body.muniz-ai-open .mobile-bottom-nav {
+          display: none !important;
+        }
+      `}</style>
+      <nav className="mobile-bottom-nav md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-surface-container-high shadow-[0_-8px_30px_rgba(0,0,0,0.12)] pb-safe rounded-t-[32px] overflow-hidden translate-z-0">
       <div className="flex justify-around items-center h-20 px-2">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
@@ -49,5 +55,6 @@ export default function Navigation() {
         })}
       </div>
     </nav>
+    </>
   );
 }
