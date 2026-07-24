@@ -29,21 +29,33 @@ interface ChatMessage {
 }
 
 // ── Opções humanizadas de serviços (Sprint 3.2.5) ────────────────────────────
-const SERVICE_OPTIONS = [
-  '🌐 Criar um Site',
-  '📈 Aumentar minhas Vendas',
-  '📊 Relatórios e Dashboards (Power BI)',
-  '🤖 Inteligência Artificial',
-  '⚡ Automatizar Processos',
-  '🏢 Melhorar a Gestão da Empresa',
-  '💻 Suporte Técnico',
-  '📶 Wi-Fi, Redes e Infraestrutura',
-  '🖨️ Impressoras e Equipamentos',
-  '🔗 Integrar Sistemas',
-  '📱 Cartão Digital e QR Code',
-  '📺 TV Corporativa',
-  '🛠️ Não sei o que preciso (Quero ajuda)',
+interface ServiceCardInfo {
+  key: string;
+  emoji: string;
+  title: string;
+  subtitle?: string;
+  badge?: string;
+  fullWidth?: boolean;
+}
+
+const SERVICE_CARDS: ServiceCardInfo[] = [
+  { key: '🌐 Criar um Site', emoji: '🌐', title: 'Criar um Site', subtitle: 'Sites, landing pages e portfólios' },
+  { key: '📈 Aumentar minhas Vendas', emoji: '📈', title: 'Aumentar minhas Vendas', subtitle: 'Marketing digital e tráfego pago' },
+  { key: '📊 Relatórios e Dashboards (Power BI)', emoji: '📊', title: 'Relatórios e Dashboards', subtitle: 'Power BI', badge: 'MAIS PROCURADO' },
+  { key: '🤖 Inteligência Artificial', emoji: '🤖', title: 'Inteligência Artificial', subtitle: 'Chatbots, automação e IA generativa', badge: 'DESTAQUE' },
+  { key: '⚡ Automatizar Processos', emoji: '⚡', title: 'Automatizar Processos', subtitle: 'Elimine tarefas repetitivas', badge: 'RECOMENDADO' },
+  { key: '🏢 Melhorar a Gestão da Empresa', emoji: '🏢', title: 'Melhorar a Gestão', subtitle: 'ERP, financeiro e operações' },
+  { key: '💻 Suporte Técnico', emoji: '💻', title: 'Suporte Técnico', subtitle: 'Computadores, servidores e TI' },
+  { key: '📶 Wi-Fi, Redes e Infraestrutura', emoji: '📶', title: 'Wi-Fi, Redes e Infra', subtitle: 'Cabeamento e conectividade' },
+  { key: '🖨️ Impressoras e Equipamentos', emoji: '🖨️', title: 'Impressoras e Equipamentos' },
+  { key: '🔗 Integrar Sistemas', emoji: '🔗', title: 'Integrar Sistemas', subtitle: 'APIs e integrações' },
+  { key: '📱 Cartão Digital e QR Code', emoji: '📱', title: 'Cartão Digital e QR Code' },
+  { key: '📺 TV Corporativa', emoji: '📺', title: 'TV Corporativa', subtitle: 'Digital signage' },
+  { key: '🛠️ Não sei o que preciso (Quero ajuda)', emoji: '🛠️', title: 'Não sei o que preciso', subtitle: 'Conte seu problema e a Muniz AI indica a melhor solução.', fullWidth: true },
 ];
+
+// Chaves usadas no fluxo (SERVICE_OPTIONS mantido para compatibilidade)
+const SERVICE_OPTIONS = SERVICE_CARDS.map((c) => c.key);
 
 // Mapeamento: label exibido → categoria interna no CRM
 const SERVICE_DISPLAY_TO_CRM: Record<string, string> = {
@@ -62,13 +74,8 @@ const SERVICE_DISPLAY_TO_CRM: Record<string, string> = {
   '🛠️ Não sei o que preciso (Quero ajuda)': 'Consultoria Comercial',
 };
 
-// Opções com destaque visual no chat
-const HIGHLIGHTED_OPTIONS = new Set([
-  '📊 Relatórios e Dashboards (Power BI)',
-  '🤖 Inteligência Artificial',
-  '⚡ Automatizar Processos',
-  '🛠️ Não sei o que preciso (Quero ajuda)',
-]);
+// Lookup rápido de metadados por key
+const SERVICE_CARD_MAP = new Map(SERVICE_CARDS.map((c) => [c.key, c]));
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
@@ -481,29 +488,63 @@ export default function MunizAIChat() {
 
                   <span className="text-[9px] text-slate-500 mt-1 font-mono px-1">{msg.timestamp}</span>
 
-                  {msg.options && msg.options.length > 0 && (
-                    <div className={`mt-3 max-w-[95%] pl-8 ${
-                      msg.actionType === 'service_select'
-                        ? 'grid grid-cols-2 gap-1.5'
-                        : 'flex flex-wrap gap-1.5'
-                    }`}>
+                  {/* ── Service cards (Sprint 3.2.5 visual) ── */}
+                  {msg.options && msg.options.length > 0 && msg.actionType === 'service_select' && (
+                    <div className="mt-3 max-w-[95%] pl-8 grid grid-cols-2 gap-1.5">
                       {msg.options.map((opt) => {
-                        const isHighlighted = HIGHLIGHTED_OPTIONS.has(opt);
+                        const meta = SERVICE_CARD_MAP.get(opt);
+                        if (!meta) return null;
                         return (
                           <button
                             key={opt}
                             onClick={() => handleSendMessage(opt)}
-                            className={`px-2.5 py-2 rounded-xl text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 text-left leading-tight ${
-                              isHighlighted
-                                ? 'bg-secondary/15 hover:bg-secondary/30 text-secondary border border-secondary/40 hover:border-secondary/60 shadow-sm shadow-secondary/10'
-                                : 'bg-slate-900 hover:bg-secondary/20 text-slate-200 hover:text-secondary border border-slate-800 hover:border-secondary/40'
-                            }`}
+                            className={`relative group px-2.5 py-2.5 rounded-xl text-left transition-all duration-200 cursor-pointer
+                              bg-slate-900 border border-slate-700/60 text-slate-200
+                              hover:border-secondary/60 hover:bg-secondary/10 hover:shadow-md hover:shadow-secondary/5 hover:-translate-y-0.5
+                              active:scale-[0.97]
+                              ${meta.fullWidth ? 'col-span-2 border-dashed border-secondary/30' : ''}
+                            `}
                           >
-                            <span className="flex-1">{opt}</span>
-                            <ChevronRight className="w-3 h-3 shrink-0" />
+                            {/* Badge */}
+                            {meta.badge && (
+                              <span className="absolute -top-1.5 right-2 px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-wider bg-slate-800 text-secondary border border-secondary/30 leading-none">
+                                {meta.badge}
+                              </span>
+                            )}
+
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">{meta.emoji}</span>
+                              <div className="flex-1 min-w-0">
+                                <span className="block text-[10px] font-bold leading-tight text-slate-100 group-hover:text-secondary transition-colors">
+                                  {meta.title}
+                                </span>
+                                {meta.subtitle && (
+                                  <span className="block text-[8px] text-slate-500 group-hover:text-slate-400 mt-0.5 leading-tight transition-colors">
+                                    {meta.subtitle}
+                                  </span>
+                                )}
+                              </div>
+                              <ChevronRight className="w-3 h-3 shrink-0 text-slate-600 group-hover:text-secondary transition-colors" />
+                            </div>
                           </button>
                         );
                       })}
+                    </div>
+                  )}
+
+                  {/* ── Generic option buttons (non-service) ── */}
+                  {msg.options && msg.options.length > 0 && msg.actionType !== 'service_select' && (
+                    <div className="flex flex-wrap gap-1.5 mt-3 max-w-[90%] pl-8">
+                      {msg.options.map((opt) => (
+                        <button
+                          key={opt}
+                          onClick={() => handleSendMessage(opt)}
+                          className="px-3 py-1.5 bg-slate-900 hover:bg-secondary/20 text-slate-200 hover:text-secondary border border-slate-800 hover:border-secondary/40 rounded-xl text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1"
+                        >
+                          <span>{opt}</span>
+                          <ChevronRight className="w-3 h-3" />
+                        </button>
+                      ))}
                     </div>
                   )}
 
