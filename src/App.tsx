@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import Navigation from '@/components/Navigation';
 import UrgencyBar from '@/components/UrgencyBar';
 import WhatsAppCTA from '@/components/WhatsAppCTA';
+import MunizAIChat from '@/components/MunizAIChat';
 
 // Lazy loading pages
 const Home = React.lazy(() => import('@/pages/Home'));
@@ -33,6 +34,7 @@ const AdminPendingDeals = React.lazy(() => import('@/pages/admin/AdminPendingDea
 const AdminDeals = React.lazy(() => import('@/pages/admin/AdminDeals'));
 const AdminReviews = React.lazy(() => import('@/pages/admin/AdminReviews'));
 const AdminCategories = React.lazy(() => import('@/pages/admin/AdminCategories'));
+const AdminLeads = React.lazy(() => import('@/pages/admin/AdminLeads'));
 
 function PageWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -101,6 +103,7 @@ function AppContent() {
                 <Route path="ofertas" element={<AdminDeals />} />
                 <Route path="avaliacoes" element={<AdminReviews />} />
                 <Route path="categorias" element={<AdminCategories />} />
+                <Route path="leads" element={<AdminLeads />} />
               </Route>
             </Routes>
           </Suspense>
@@ -110,6 +113,7 @@ function AppContent() {
       {!isAdminPath && <Footer />}
       {!isAdminPath && <Navigation />}
       {!isAdminPath && <WhatsAppCTA />}
+      {!isAdminPath && <MunizAIChat />}
     </div>
   );
 }

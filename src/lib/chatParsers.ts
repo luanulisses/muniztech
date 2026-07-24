@@ -22,7 +22,8 @@ const DEMAND_WORDS = [
   'quero',
   'valor',
   'quanto custa',
-  'sistema', 'site',
+  'sistema',
+  'site',
   'ajuda',
   'solução',
   'solucao',
@@ -45,6 +46,18 @@ const KNOWN_COMPANIES: Record<string, string> = {
 };
 
 const COMPANY_PREFIX_REGEXES = [
+  /^eu\s+falo\s+da\s+empresa\s+/i,
+  /^eu\s+falo\s+da\s+/i,
+  /^falo\s+da\s+empresa\s+/i,
+  /^falo\s+do\s+grupo\s+/i,
+  /^falo\s+da\s+/i,
+  /^falo\s+do\s+/i,
+  /^venho\s+da\s+empresa\s+/i,
+  /^venho\s+da\s+/i,
+  /^faço\s+parte\s+da\s+empresa\s+/i,
+  /^faco\s+parte\s+da\s+empresa\s+/i,
+  /^faço\s+parte\s+da\s+/i,
+  /^faco\s+parte\s+da\s+/i,
   /^eu\s+sou\s+da\s+empresa\s+/i,
   /^trabalho\s+na\s+empresa\s+/i,
   /^represento\s+a\s+empresa\s+/i,
@@ -183,7 +196,7 @@ export function normalizeCompanyName(value: string): string {
 
 /**
  * Extract clean company name from natural user statement.
- * Removes prefixes like "sou da empresa aqui de", "eu sou da empresa", "trabalho na", etc.
+ * Removes prefixes like "falo da", "eu falo da", "falo da empresa", "sou da empresa aqui de", "eu sou da empresa", "trabalho na", etc.
  */
 export function extractCompanyName(input: string): string | null {
   if (!input || typeof input !== 'string') return null;

@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════════════════════════════════════════
-// SUITE DE TESTES: chatParsers.test.ts (Sprint 3.2.4)
+// SUITE DE TESTES: chatParsers.test.ts (Sprint 3.2.4 — Extended Suite)
 // Validando importação direta de src/lib/chatParsers.ts
 // ══════════════════════════════════════════════════════════════════════════════
 
@@ -20,6 +20,11 @@ const nameTestCases: TestCase[] = [
 ];
 
 const companyTestCases: TestCase[] = [
+  { input: 'falo da FVO Alimentos', expected: 'FVO Alimentos' },
+  { input: 'eu falo da FVO Alimentos', expected: 'FVO Alimentos' },
+  { input: 'falo da empresa Connect', expected: 'Connect' },
+  { input: 'venho da BASA', expected: 'BASA' },
+  { input: 'faço parte da Muniz Tech', expected: 'Muniz Tech' },
   { input: 'sou da empresa aqui de Power bi', expected: 'Power BI' },
   { input: 'eu sou da empresa Connect', expected: 'Connect' },
   { input: 'sou da BASA', expected: 'BASA' },
@@ -57,7 +62,6 @@ export function runChatParserTests() {
   return passed === total;
 }
 
-// Auto-executar se rodado via Node.js CLI
 if (typeof process !== 'undefined' && process.argv && process.argv[1]?.includes('chatParsers.test')) {
   const success = runChatParserTests();
   if (!success) {
