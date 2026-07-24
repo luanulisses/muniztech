@@ -32,16 +32,23 @@ import {
   CheckCircle2,
   Terminal,
   Sparkles,
+  Mail,
+  Clock,
+  TrendingUp,
 } from 'lucide-react';
 import {
   PORTFOLIO_PROFILE,
   PORTFOLIO_WHATSAPP_URL,
+  PORTFOLIO_BUDGET_URL,
   PORTFOLIO_TECHS,
   PORTFOLIO_PROJECTS,
   PORTFOLIO_SERVICES,
   PortfolioProject,
   PortfolioService,
 } from '@/data/portfolio';
+import { SITE_CONFIG } from '@/config/site';
+import { getEmailUrl } from '@/config/links';
+import BudgetModal from '@/components/portfolio/BudgetModal';
 
 // ── ICON MAPPER ─────────────────────────────────────────────────────────────
 const ICON_MAP: Record<string, any> = {
@@ -88,7 +95,7 @@ function ProjectImage({ src, alt, title, category }: { src: string; alt: string;
 
   if (hasError || !src) {
     return (
-      <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden group">
+      <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(22,163,74,0.15),transparent)]" />
         <div className="w-12 h-12 rounded-2xl bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary mb-3 relative z-10">
           <Terminal className="w-6 h-6" />
@@ -124,10 +131,36 @@ const fadeUp = {
   }),
 };
 
+// ── SCROLL HELPER ───────────────────────────────────────────────────────────
+function scrollToSection(id: string) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// ── CTA CHECKLIST ITEMS ─────────────────────────────────────────────────────
+const CTA_SERVICES = [
+  'Desenvolvimento Web',
+  'ERP Senior',
+  'Oracle',
+  'Inteligência Artificial',
+  'Automação',
+  'Dashboards',
+  'Sistemas personalizados',
+];
+
 // ── MAIN COMPONENT ──────────────────────────────────────────────────────────
 export default function Portfolio() {
   usePortfolioSEO();
   const [imageError, setImageError] = useState(false);
+  const [isBudgetOpen, setIsBudgetOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<string | undefined>();
+
+  const handleOpenBudget = (serviceName?: string) => {
+    setSelectedService(serviceName);
+    setIsBudgetOpen(true);
+  };
 
   return (
     <div className="bg-surface min-h-screen text-on-surface">
@@ -153,7 +186,7 @@ export default function Portfolio() {
                 <span>Desenvolvimento • ERP • Oracle • IA • Automação</span>
               </motion.div>
 
-              {/* Título Principal (clamp responsivo) */}
+              {/* Título Principal */}
               <motion.h1
                 variants={fadeUp}
                 custom={1}
@@ -172,24 +205,24 @@ export default function Portfolio() {
                 Conheça os projetos, tecnologias e serviços desenvolvidos pela Muniz Tech.
               </motion.p>
 
-              {/* Botões de Ação Uniformes */}
+              {/* Botões de Ação */}
               <motion.div
                 variants={fadeUp}
                 custom={3}
                 className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2"
               >
-                <a
-                  href="#projetos"
-                  className="h-12 px-6 bg-secondary text-white rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all hover:bg-secondary-fixed-variant active:scale-95 shadow-md shadow-secondary/20"
+                <button
+                  onClick={() => scrollToSection('projetos')}
+                  className="h-12 px-6 bg-secondary text-white rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all hover:bg-secondary-fixed-variant active:scale-95 shadow-md shadow-secondary/20 cursor-pointer"
                 >
                   <Briefcase className="w-4 h-4" /> Ver Projetos
-                </a>
-                <a
-                  href="#servicos"
-                  className="h-12 px-6 bg-slate-900 text-white rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all hover:bg-slate-800 active:scale-95 shadow-md"
+                </button>
+                <button
+                  onClick={() => handleOpenBudget()}
+                  className="h-12 px-6 bg-slate-900 text-white rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all hover:bg-slate-800 active:scale-95 shadow-md cursor-pointer"
                 >
                   <Send className="w-4 h-4" /> Solicitar Orçamento
-                </a>
+                </button>
                 <a
                   href={PORTFOLIO_WHATSAPP_URL}
                   target="_blank"
@@ -271,7 +304,7 @@ export default function Portfolio() {
               custom={0}
               className="lg:col-span-5 flex justify-center"
             >
-              <div className="w-full max-w-[280px] sm:max-w-[320px] aspect-[4/5] rounded-[32px] bg-white border-4 border-secondary/20 p-2 shadow-xl shadow-black/5 relative group">
+              <div className="w-full max-w-[280px] sm:max-w-[320px] aspect-[4/5] rounded-[32px] bg-white border-4 border-secondary/20 p-2 shadow-xl shadow-black/5 relative group hover:shadow-2xl hover:shadow-secondary/10 transition-shadow duration-500">
                 <div className="w-full h-full rounded-[24px] overflow-hidden bg-surface-container-low relative flex items-center justify-center">
                   {!imageError ? (
                     <img
@@ -408,11 +441,11 @@ export default function Portfolio() {
                 viewport={{ once: true }}
                 variants={fadeUp}
                 custom={idx}
-                className={`bg-white rounded-2xl md:rounded-[24px] border border-surface-container-high overflow-hidden shadow-sm hover:shadow-xl transition-all flex flex-col ${
+                className={`bg-white rounded-2xl md:rounded-[24px] border border-surface-container-high overflow-hidden shadow-sm hover:shadow-xl hover:border-secondary/30 transition-all duration-300 flex flex-col ${
                   project.featured ? 'md:col-span-2' : ''
                 } group`}
               >
-                {/* Container de Imagem (16:9) */}
+                {/* Container de Imagem */}
                 <div className={`w-full ${project.featured ? 'h-56 sm:h-72' : 'h-48 sm:h-56'} relative overflow-hidden bg-slate-900`}>
                   <ProjectImage
                     src={project.image}
@@ -425,7 +458,7 @@ export default function Portfolio() {
                   <div className="absolute top-3 right-3 z-10">
                     {project.status === 'online' ? (
                       <span className="px-3 py-1 bg-emerald-500/90 text-white backdrop-blur-sm rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-white animate-pulse" /> Online
+                        <span className="w-2 h-2 rounded-full bg-white animate-pulse" /> Em produção
                       </span>
                     ) : project.status === 'private' ? (
                       <span className="px-3 py-1 bg-slate-900/90 text-white backdrop-blur-sm rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm flex items-center gap-1.5">
@@ -466,6 +499,25 @@ export default function Portfolio() {
                       ))}
                     </div>
 
+                    {/* Métricas */}
+                    {project.metrics && project.metrics.length > 0 && (
+                      <div className="pt-2 space-y-1.5">
+                        <div className="text-[9px] font-black uppercase tracking-widest text-on-surface-variant/60 flex items-center gap-1">
+                          <TrendingUp className="w-3 h-3" /> Métricas
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {project.metrics.map((m) => (
+                            <span
+                              key={m}
+                              className="px-2.5 py-1 bg-secondary/5 text-secondary rounded-lg text-[10px] font-black uppercase tracking-wider border border-secondary/10"
+                            >
+                              {m}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Destaques */}
                     <div className="pt-2 space-y-1.5">
                       <div className="text-[9px] font-black uppercase tracking-widest text-on-surface-variant/60">
@@ -491,11 +543,12 @@ export default function Portfolio() {
                         rel="noopener noreferrer"
                         className="w-full sm:w-auto px-5 py-2.5 bg-secondary text-white rounded-xl font-black uppercase text-xs tracking-widest flex items-center justify-center gap-2 hover:bg-secondary-fixed-variant transition-colors shadow-sm"
                       >
-                        Visitar projeto <ExternalLink className="w-3.5 h-3.5" />
+                        Visitar Projeto <ExternalLink className="w-3.5 h-3.5" />
                       </a>
                     ) : (
                       <span className="text-xs font-black uppercase tracking-wider text-on-surface-variant/60 flex items-center gap-1.5">
-                        <Lock className="w-3.5 h-3.5" /> Solução corporativa interna
+                        <Lock className="w-3.5 h-3.5" />
+                        {project.status === 'in_development' ? 'Em desenvolvimento' : 'Projeto privado'}
                       </span>
                     )}
                   </div>
@@ -585,21 +638,46 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* ═══════════════════ 6. CTA FINAL ═══════════════════ */}
+      {/* ═══════════════════ 6. CTA FINAL — PREMIUM ═══════════════════ */}
       <section className="py-14 sm:py-20 md:py-24">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-slate-900 rounded-[32px] p-8 sm:p-12 md:p-16 text-center space-y-6 relative overflow-hidden shadow-2xl">
+          <div className="bg-slate-900 rounded-[32px] p-8 sm:p-12 md:p-16 text-center space-y-8 relative overflow-hidden shadow-2xl">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(22,163,74,0.15),transparent)]" />
 
-            <div className="relative z-10 max-w-2xl mx-auto space-y-4">
+            <div className="relative z-10 max-w-2xl mx-auto space-y-6">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white uppercase tracking-tight leading-tight">
-                Tem uma ideia ou problema <span className="text-secondary">para resolver?</span>
+                Vamos conversar sobre <span className="text-secondary">seu projeto?</span>
               </h2>
-              <p className="text-sm sm:text-base text-gray-400 font-label-bold leading-relaxed">
-                Vamos conversar e encontrar a melhor solução para o seu projeto ou empresa.
-              </p>
 
-              <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+              {/* Checklist de serviços */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 text-left max-w-md mx-auto">
+                {CTA_SERVICES.map((svc) => (
+                  <div key={svc} className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-secondary shrink-0" />
+                    <span className="text-sm text-gray-300 font-label-bold">{svc}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Tempo médio de resposta */}
+              <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-5 py-2.5 backdrop-blur-sm">
+                <Clock className="w-4 h-4 text-secondary" />
+                <span className="text-xs font-black text-white uppercase tracking-wider">
+                  Tempo médio de resposta:
+                </span>
+                <span className="text-xs font-black text-secondary uppercase tracking-wider">
+                  Menos de 30 minutos
+                </span>
+              </div>
+
+              {/* Botões */}
+              <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                <button
+                  onClick={() => handleOpenBudget()}
+                  className="h-12 px-8 bg-white text-slate-900 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all hover:bg-slate-100 active:scale-95 shadow-md cursor-pointer"
+                >
+                  <Send className="w-4 h-4" /> Solicitar Orçamento
+                </button>
                 <a
                   href={PORTFOLIO_WHATSAPP_URL}
                   target="_blank"
@@ -609,16 +687,44 @@ export default function Portfolio() {
                   <Phone className="w-4 h-4" /> Falar no WhatsApp
                 </a>
                 <a
-                  href={`mailto:${PORTFOLIO_PROFILE.email}?subject=Solicita%C3%A7%C3%A3o%20de%20Or%C3%A7amento`}
-                  className="h-12 px-8 bg-white text-slate-900 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all hover:bg-slate-100 active:scale-95 shadow-md"
+                  href={getEmailUrl()}
+                  className="h-12 px-8 bg-white/10 text-white border border-white/20 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all hover:bg-white/20 active:scale-95"
                 >
-                  <Send className="w-4 h-4" /> Solicitar Orçamento
+                  <Mail className="w-4 h-4" /> Enviar E-mail
                 </a>
               </div>
+
+              {/* E-mail discreto */}
+              <a
+                href={getEmailUrl()}
+                className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-300 transition-colors text-xs font-label-bold tracking-wide"
+              >
+                <Mail className="w-3.5 h-3.5" />
+                {SITE_CONFIG.owner.email}
+              </a>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Modal de Orçamento */}
+      <BudgetModal
+        isOpen={isBudgetOpen}
+        onClose={() => setIsBudgetOpen(false)}
+        defaultService={selectedService}
+      />
     </div>
   );
 }
+
+// FASE 3
+//
+// IA COMERCIAL
+// Qualificar lead
+// Fazer perguntas
+// Agendar reunião
+// Gerar proposta PDF
+// Integrar Evolution API
+// Integrar Google Calendar
+// Dashboard comercial
+

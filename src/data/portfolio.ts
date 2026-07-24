@@ -1,3 +1,6 @@
+import { SITE_CONFIG } from '@/config/site';
+import { getWhatsAppBudgetUrl, getWhatsAppProjectUrl } from '@/config/links';
+
 export interface PortfolioProject {
   id: string;
   title: string;
@@ -7,6 +10,7 @@ export interface PortfolioProject {
   url?: string;
   technologies: string[];
   highlights: string[];
+  metrics?: string[];
   status: 'online' | 'private' | 'in_development';
   featured?: boolean;
 }
@@ -37,23 +41,25 @@ export interface PortfolioProfile {
   image: string;
   fallbackInitials: string;
   whatsappNumber: string;
-  whatsappMessage: string;
   email: string;
 }
 
 export const PORTFOLIO_PROFILE: PortfolioProfile = {
-  name: 'Luan Muniz',
+  name: SITE_CONFIG.owner.name,
   role: 'Fundador & Especialista em Tecnologia',
-  subrole: 'Tecnologia • Sistemas • ERP • IA • Automação',
+  subrole: SITE_CONFIG.owner.role,
   bio: 'Meu nome é Luan Muniz. Atuo com tecnologia, desenvolvimento de sistemas, ERP Senior, Oracle, inteligência artificial, automações e soluções digitais. Meu objetivo é transformar problemas reais em soluções práticas, escaláveis e eficientes.',
-  image: '/portfolio/luan-muniz.jpg',
+  image: '/luan-muniz.jpg',
   fallbackInitials: 'LM',
-  whatsappNumber: '5562999999999',
-  whatsappMessage: 'Ol%C3%A1%2C%20vim%20pelo%20site%20da%20Muniz%20Tech%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento.',
-  email: 'contato@muniztech.com.br',
+  whatsappNumber: SITE_CONFIG.whatsapp.number,
+  email: SITE_CONFIG.owner.email,
 };
 
-export const PORTFOLIO_WHATSAPP_URL = `https://wa.me/${PORTFOLIO_PROFILE.whatsappNumber}?text=${PORTFOLIO_PROFILE.whatsappMessage}`;
+/** WhatsApp — Conversar sobre um projeto */
+export const PORTFOLIO_WHATSAPP_URL = getWhatsAppProjectUrl();
+
+/** WhatsApp — Solicitar orçamento */
+export const PORTFOLIO_BUDGET_URL = getWhatsAppBudgetUrl();
 
 export const PORTFOLIO_TECHS: PortfolioTechCategory[] = [
   {
@@ -111,6 +117,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     status: 'online',
     featured: true,
     technologies: ['React', 'TypeScript', 'Supabase', 'Gemini', 'Vercel', 'Analytics'],
+    metrics: ['+100 mil acessos', '+500 horas de conteúdo', '+200 aulas'],
     highlights: [
       'IA tutora pedagógica 24/7',
       'Gamificação estilo Duolingo',
@@ -128,6 +135,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     url: 'https://connect.muniztech.com.br/',
     status: 'online',
     technologies: ['React', 'Supabase', 'Mercado Pago', 'NFC', 'Vercel', 'Analytics'],
+    metrics: ['Cartões digitais NFC', 'TV corporativa', 'Assinaturas recorrentes'],
     highlights: [
       'Cartões digitais inteligentes',
       'Integração com tecnologia NFC',
@@ -145,6 +153,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     url: 'https://www.quintaldafafa.com.br/',
     status: 'online',
     technologies: ['React', 'Supabase', 'Mercado Pago', 'Webhooks', 'PIX', 'QR Code'],
+    metrics: ['PIX instantâneo', 'QR Code na portaria', 'Lista VIP'],
     highlights: [
       'Checkout PIX com aprovação instantânea',
       'Envio automático via Webhooks',
@@ -162,6 +171,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     url: 'https://duarte-jus.vercel.app/',
     status: 'online',
     technologies: ['React', 'Vite', 'TailwindCSS', 'Vercel', 'SEO'],
+    metrics: ['SEO otimizado', 'Captação de leads', 'Design institucional'],
     highlights: [
       'Design responsivo e institucional',
       'Arquitetura focada em conversão',
@@ -178,6 +188,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     url: 'https://www.rvgseletricafotovoltaica.com/',
     status: 'online',
     technologies: ['React', 'TypeScript', 'TailwindCSS', 'Vite', 'Vercel'],
+    metrics: ['Simulação de orçamento', 'SEO local', 'Captação orgânica'],
     highlights: [
       'Apresentação de soluções solares',
       'Formulários e simulação de orçamento',

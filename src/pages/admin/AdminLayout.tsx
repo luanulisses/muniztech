@@ -3,7 +3,7 @@ import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { 
   Loader2, LayoutDashboard, Tag, ShoppingCart, 
-  Star, LogOut, ArrowLeft, Menu, X 
+  Star, LogOut, ArrowLeft, Menu, X, Users 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -50,6 +50,7 @@ export default function AdminLayout() {
 
   const navItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+    { name: 'Leads ⚡', path: '/admin/leads', icon: Users },
     { name: 'Pendentes 🔥', path: '/admin/pendentes', icon: ShoppingCart },
     { name: 'Ofertas', path: '/admin/ofertas', icon: ShoppingCart },
     { name: 'Avaliações', path: '/admin/avaliacoes', icon: Star },
